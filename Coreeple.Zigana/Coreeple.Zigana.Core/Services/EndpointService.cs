@@ -1,6 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Data.Repositories;
 using Coreeple.Zigana.Core.Json.Converters;
-using Microsoft.AspNetCore.Http;
+using Coreeple.Zigana.Core.Types;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.Primitives;
@@ -17,7 +17,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Types.Endpoint> FindEndpointAsync(HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default)
     {
         var endpoints = await GetEndpointsAsync(cancellationToken);
         var path = context.Request.Path;
@@ -75,7 +75,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         return [];
     }
 
-    private async Task<Types.Endpoint?> GetEndpointByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    private async Task<Endpoint?> GetEndpointByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var endpoint = await endpointRepository.GetByIdWithApiAsync(id, cancellationToken);
 
@@ -84,7 +84,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
             return default;
         }
 
-        var result = new Types.Endpoint
+        var result = new Endpoint
         {
             Id = endpoint.Id,
             Path = endpoint.Path,
@@ -92,7 +92,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Response != null)
         {
-            result.Response = JsonSerializer.Deserialize<Dictionary<string, Types.Response>>(endpoint.Response, jsonSerializerOptions);
+            result.Response = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, jsonSerializerOptions);
         }
 
         if (endpoint.Defs != null)
@@ -102,20 +102,23 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Actions != null)
         {
-            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, jsonSerializerOptions);
+            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Action>>(endpoint.Actions, jsonSerializerOptions);
         }
 
         return result;
     }
 
     private static async Task SetRequestAsync(
-        HttpContext context, Types.Endpoint endpoint, Dictionary<string, object?> routeParameters, CancellationToken cancellationToken = default)
+        Microsoft.AspNetCore.Http.HttpContext context,
+        Endpoint endpoint,
+        Dictionary<string, object?> routeParameters,
+        CancellationToken cancellationToken = default)
     {
         var query = StringValuesToObject(context.Request.Query.ToDictionary());
         var headers = StringValuesToObject(context.Request.Headers.ToDictionary());
         var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync(cancellationToken);
 
-        endpoint.Request = new Types.Request
+        endpoint.Request = new Request
         {
             Query = JsonNode.Parse(JsonSerializer.Serialize(query))?.AsObject(),
             Headers = JsonNode.Parse(JsonSerializer.Serialize(headers))?.AsObject(),
@@ -165,5 +168,5 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
 public interface IEndpointService
 {
-    Task<Types.Endpoint> FindEndpointAsync(HttpContext context, CancellationToken cancellationToken = default);
+    Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default);
 }
