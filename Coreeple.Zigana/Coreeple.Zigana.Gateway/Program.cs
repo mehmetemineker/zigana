@@ -12,10 +12,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.MapGet("/test", async (IApiService endpointService) =>
+app.MapGet("/test", async (HttpContext context, IApiService endpointService) =>
 {
     var endpoints = await endpointService.GetEndpoints();
-    return Results.Ok(endpoints);
+
+    var endpoint = await endpointService.GetEndpointById(endpoints.First().Value, context.Request);
+
+    return Results.Ok(endpoint);
 });
 
 app.UseHttpsRedirection();
