@@ -6,8 +6,6 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
 {
     public async Task InvokeAsync(HttpContext context)
     {
-        context.Response.ContentType = "application/json";
-
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
         var requestId = Guid.NewGuid();
@@ -18,6 +16,11 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
 
         await logService.EndAsync(requestId, context.RequestAborted);
 
+        SetDefaultContentTypeResponse(context);
+
         await next(context);
     }
+
+    private static void SetDefaultContentTypeResponse(HttpContext context) =>
+        context.Response.ContentType = "application/json";
 }
