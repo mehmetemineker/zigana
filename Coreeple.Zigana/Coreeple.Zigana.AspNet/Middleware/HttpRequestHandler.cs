@@ -6,6 +6,8 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
 {
     public async Task InvokeAsync(HttpContext context)
     {
+        SetDefaultResponseContentType(context);
+
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
         var requestId = Guid.NewGuid();
@@ -15,8 +17,6 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
         await context.Response.WriteAsJsonAsync(endpoint, context.RequestAborted);
 
         await logService.EndAsync(requestId, context.RequestAborted);
-
-        SetDefaultResponseContentType(context);
 
         await next(context);
     }
