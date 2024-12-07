@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.Core.Services;
-public class ApiService(IApiRepository apiRepository, IEndpointRepository endpointRepository) : IApiService
+public class EndpointService(IApiRepository apiRepository, IEndpointRepository endpointRepository) : IEndpointService
 {
     private static readonly JsonSerializerOptions jsonSerializerOptions = new()
     {
@@ -163,7 +163,7 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
     }
 }
 
-public interface IApiService
+public interface IEndpointService
 {
     Task<Types.Endpoint> FindEndpointAsync(HttpContext context, CancellationToken cancellationToken = default);
 }

@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDapperContext, DapperContext>();
         services.AddTransient<IApiRepository, ApiRepository>();
         services.AddTransient<IEndpointRepository, EndpointRepository>();
-        services.AddTransient<IApiService, ApiService>();
+        services.AddTransient<IEndpointService, EndpointService>();
 
         return new ZiganaBuilder(services, configuration);
     }
