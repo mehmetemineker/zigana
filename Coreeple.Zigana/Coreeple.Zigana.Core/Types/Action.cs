@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using Coreeple.Zigana.Core.Types.Actions;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Coreeple.Zigana.Core.Types;

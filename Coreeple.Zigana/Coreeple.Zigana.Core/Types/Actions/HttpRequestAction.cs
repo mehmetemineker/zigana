@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace Coreeple.Zigana.Core.Types;
+namespace Coreeple.Zigana.Core.Types.Actions;
 public class HttpRequestAction : Action
 {
     public required string Url { get; set; }
