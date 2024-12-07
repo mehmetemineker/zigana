@@ -1,7 +1,7 @@
 ﻿using Coreeple.Zigana.AspNet.Extensions;
 using Coreeple.Zigana.Core.Data;
 using Coreeple.Zigana.Core.Data.Repositories;
-using Coreeple.Zigana.Core.Data.Services;
+using Coreeple.Zigana.Core.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -13,9 +13,9 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddSingleton<IDapperContext, DapperContext>();
-        services.AddScoped<IApiRepository, ApiRepository>();
-        services.AddScoped<IEndpointRepository, EndpointRepository>();
-        services.AddScoped<IApiService, ApiService>();
+        services.AddTransient<IApiRepository, ApiRepository>();
+        services.AddTransient<IEndpointRepository, EndpointRepository>();
+        services.AddTransient<IApiService, ApiService>();
 
         return new ZiganaBuilder(services, configuration);
     }

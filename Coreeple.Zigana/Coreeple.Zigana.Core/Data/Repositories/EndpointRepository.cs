@@ -10,7 +10,7 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
         using var connection = context.CreateConnection();
 
         var sql = """
-            SELECT "Id", "ApiId", "Path"
+            SELECT "Id", "ApiId", "Path", "Method"
             FROM "Endpoints"
         """;
 
@@ -25,7 +25,7 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
 
         var sql = """
             SELECT 
-                ep."Id", ep."ApiId", api."Path" || ep."Path" AS "Path", 
+                ep."Id", ep."ApiId", api."Path" || ep."Path" AS "Path", ep."Method",
                 ep."Actions", ep."Response", api."Definitions"
             FROM "Endpoints" ep
             LEFT JOIN public."Apis" api ON api."Id" = ep."ApiId"
