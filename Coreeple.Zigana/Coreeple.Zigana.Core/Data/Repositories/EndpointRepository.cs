@@ -3,27 +3,17 @@ using Dapper;
 
 namespace Coreeple.Zigana.Core.Data.Repositories;
 
-public class EndpointRepository : IEndpointRepository
+public class EndpointRepository(IDapperContext context) : IEndpointRepository
 {
-    private readonly IDapperContext _context;
-    public EndpointRepository(IDapperContext context)
+    public async Task<IEnumerable<Endpoint>?> GetAll()
     {
-        ArgumentNullException.ThrowIfNull(context);
-
-        _context = context;
-    }
-
-    public async Task<Endpoint?> GetEndpointById(Guid id)
-    {
-        using var connection = _context.CreateConnection();
+        using var connection = context.CreateConnection();
 
         var sql = """
-            SELECT * FROM "Endpoints"
-            WHERE "Id" = @Id
+            SELECT "Id", "ApiId", "Path" FROM "Endpoints"
         """;
 
-        var result = await connection
-            .QuerySingleOrDefaultAsync<Endpoint>(sql, new { Id = id });
+        var result = await connection.QueryAsync<Endpoint>(sql);
 
         return result;
     }
@@ -31,5 +21,5 @@ public class EndpointRepository : IEndpointRepository
 
 public interface IEndpointRepository
 {
-    Task<Endpoint?> GetEndpointById(Guid id);
+    Task<IEnumerable<Endpoint>?> GetAll();
 }

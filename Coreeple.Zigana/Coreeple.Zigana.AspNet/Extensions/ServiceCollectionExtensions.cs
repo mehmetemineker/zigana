@@ -13,8 +13,9 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddSingleton<IDapperContext, DapperContext>();
+        services.AddScoped<IApiRepository, ApiRepository>();
         services.AddScoped<IEndpointRepository, EndpointRepository>();
-        services.AddScoped<IEndpointService, EndpointService>();
+        services.AddScoped<IApiService, ApiService>();
 
         return new ZiganaBuilder(services, configuration);
     }
