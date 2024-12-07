@@ -92,7 +92,7 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
 
         if (endpoint.Response != null)
         {
-            result.Response = JsonSerializer.Deserialize<IEnumerable<Types.Response>>(endpoint.Response, jsonSerializerOptions);
+            result.Response = JsonSerializer.Deserialize<Dictionary<string, Types.Response>>(endpoint.Response, jsonSerializerOptions);
         }
 
         if (endpoint.Defs != null)
@@ -102,7 +102,7 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
 
         if (endpoint.Actions != null)
         {
-            result.Actions = JsonSerializer.Deserialize<IEnumerable<Types.Action>>(endpoint.Actions, jsonSerializerOptions);
+            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, jsonSerializerOptions);
         }
 
         return result;
