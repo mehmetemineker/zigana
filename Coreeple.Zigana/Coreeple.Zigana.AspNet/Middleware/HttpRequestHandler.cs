@@ -1,8 +1,9 @@
-﻿using Coreeple.Zigana.Core.Services;
+﻿using Coreeple.Zigana.Core.ActionExecutors;
+using Coreeple.Zigana.Core.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
-public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointService, ILogService logService)
+public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointService, ILogService logService, IActionExecuteManager actionExecuteManager)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -13,6 +14,8 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
         var requestId = Guid.NewGuid();
 
         await logService.BeginAsync(requestId, endpoint.Id, context.RequestAborted);
+
+        await actionExecuteManager.StartAsync(endpoint, context.RequestAborted);
 
         await context.Response.WriteAsJsonAsync(endpoint, context.RequestAborted);
 

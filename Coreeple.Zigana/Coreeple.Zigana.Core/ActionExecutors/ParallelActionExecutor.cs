@@ -2,9 +2,9 @@
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.Core.ActionExecutors;
-public class HttpRequestActionExecutor : IActionExecutor<HttpRequestAction>
+public class ParallelActionExecutor : IActionExecutor<ParallelAction>
 {
-    public async Task<JsonNode?> ExecuteAsync(HttpRequestAction action, CancellationToken cancellationToken)
+    public async Task<JsonNode?> ExecuteAsync(ParallelAction action, CancellationToken cancellationToken)
     {
         await Task.Delay(2000, cancellationToken);
 

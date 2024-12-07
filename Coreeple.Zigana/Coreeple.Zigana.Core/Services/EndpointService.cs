@@ -102,7 +102,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Actions != null)
         {
-            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Action>>(endpoint.Actions, jsonSerializerOptions);
+            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, jsonSerializerOptions);
         }
 
         return result;
