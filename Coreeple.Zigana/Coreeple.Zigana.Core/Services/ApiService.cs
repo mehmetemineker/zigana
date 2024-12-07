@@ -17,9 +17,9 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<Types.Endpoint> FindEndpoint(HttpContext context)
+    public async Task<Types.Endpoint> FindEndpointAsync(HttpContext context, CancellationToken cancellationToken = default)
     {
-        var endpoints = await GetEndpoints();
+        var endpoints = await GetEndpointsAsync(cancellationToken);
         var path = context.Request.Path;
         var method = context.Request.Method;
 
@@ -32,11 +32,11 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
                 throw new Exception("Method Not Allowed");
             }
 
-            var endpoint = await GetEndpointById(endpointId);
+            var endpoint = await GetEndpointByIdAsync(endpointId, cancellationToken);
 
             if (endpoint != null)
             {
-                await SetRequestAsync(context, endpoint, matchingEndpoint.Parameters);
+                await SetRequestAsync(context, endpoint, matchingEndpoint.Parameters, cancellationToken);
 
                 return endpoint;
             }
@@ -45,10 +45,10 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
         throw new Exception("Not Found");
     }
 
-    private async Task<Dictionary<string, Guid>> GetEndpoints()
+    private async Task<Dictionary<string, Guid>> GetEndpointsAsync(CancellationToken cancellationToken = default)
     {
-        var endpointsTask = endpointRepository.GetAll();
-        var apisTask = apiRepository.GetAll();
+        var endpointsTask = endpointRepository.GetAllAsync(cancellationToken);
+        var apisTask = apiRepository.GetAllAsync(cancellationToken);
 
         await Task.WhenAll(endpointsTask, apisTask);
 
@@ -75,9 +75,9 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
         return [];
     }
 
-    private async Task<Types.Endpoint?> GetEndpointById(Guid id)
+    private async Task<Types.Endpoint?> GetEndpointByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var endpoint = await endpointRepository.GetByIdWithApi(id);
+        var endpoint = await endpointRepository.GetByIdWithApiAsync(id, cancellationToken);
 
         if (endpoint == null)
         {
@@ -95,9 +95,9 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
             result.Response = JsonSerializer.Deserialize<IEnumerable<Types.Response>>(endpoint.Response, jsonSerializerOptions);
         }
 
-        if (endpoint.Definitions != null)
+        if (endpoint.Defs != null)
         {
-            result.Definitions = JsonSerializer.Deserialize<JsonObject>(endpoint.Definitions, jsonSerializerOptions);
+            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, jsonSerializerOptions);
         }
 
         if (endpoint.Actions != null)
@@ -108,11 +108,12 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
         return result;
     }
 
-    private static async Task SetRequestAsync(HttpContext context, Types.Endpoint endpoint, Dictionary<string, object?> routeParameters)
+    private static async Task SetRequestAsync(
+        HttpContext context, Types.Endpoint endpoint, Dictionary<string, object?> routeParameters, CancellationToken cancellationToken = default)
     {
         var query = StringValuesToObject(context.Request.Query.ToDictionary());
         var headers = StringValuesToObject(context.Request.Headers.ToDictionary());
-        var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
+        var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync(cancellationToken);
 
         endpoint.Request = new Types.Request
         {
@@ -164,5 +165,5 @@ public class ApiService(IApiRepository apiRepository, IEndpointRepository endpoi
 
 public interface IApiService
 {
-    Task<Types.Endpoint> FindEndpoint(HttpContext context);
+    Task<Types.Endpoint> FindEndpointAsync(HttpContext context, CancellationToken cancellationToken = default);
 }

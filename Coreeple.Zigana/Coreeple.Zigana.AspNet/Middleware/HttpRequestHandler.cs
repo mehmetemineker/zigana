@@ -8,9 +8,9 @@ public class HttpRequestHandler(RequestDelegate next, IApiService apiService)
     {
         context.Response.ContentType = "application/json";
 
-        var endpoint = await apiService.FindEndpoint(context);
+        var endpoint = await apiService.FindEndpointAsync(context, context.RequestAborted);
 
-        await context.Response.WriteAsJsonAsync(endpoint);
+        await context.Response.WriteAsJsonAsync(endpoint, context.RequestAborted);
 
         await next(context);
     }
