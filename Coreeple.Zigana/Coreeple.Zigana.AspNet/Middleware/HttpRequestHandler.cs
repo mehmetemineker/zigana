@@ -16,11 +16,11 @@ public class HttpRequestHandler(RequestDelegate next, IEndpointService endpointS
 
         await logService.EndAsync(requestId, context.RequestAborted);
 
-        SetDefaultContentTypeResponse(context);
+        SetDefaultResponseContentType(context);
 
         await next(context);
     }
 
-    private static void SetDefaultContentTypeResponse(HttpContext context) =>
+    private static void SetDefaultResponseContentType(HttpContext context) =>
         context.Response.ContentType = "application/json";
 }
