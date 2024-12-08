@@ -4,5 +4,5 @@ namespace Coreeple.Zigana.Core.Abstractions;
 
 public interface IActionExecuteManager
 {
-    Task StartAsync(Endpoint endpoint, CancellationToken cancellationToken = default);
+    Task RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default);
 }

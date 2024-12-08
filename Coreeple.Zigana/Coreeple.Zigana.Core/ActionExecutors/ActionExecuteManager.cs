@@ -27,7 +27,7 @@ public class ActionExecuteManager : IActionExecuteManager
         };
     }
 
-    public async Task StartAsync(Endpoint endpoint, CancellationToken cancellationToken = default)
+    public async Task RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default)
     {
         if (endpoint.Actions == null)
         {
