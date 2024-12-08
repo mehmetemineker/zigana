@@ -29,9 +29,9 @@ public class HttpRequestHandler(
             await actionExecuteManager.RunAsync(endpoint.Actions, endpointContext, context.RequestAborted);
         }
 
-        if (endpoint.Response != null)
+        if (endpoint.Responses != null)
         {
-            await responseBuilder.Build(endpoint.Response, endpointContext);
+            await responseBuilder.Build(endpoint.Responses, endpointContext);
 
             var response = endpointContext["response"]!;
 

@@ -86,7 +86,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Response != null)
         {
-            result.Response = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, SerializerOptions.DefaultJsonSerializerOptions);
+            result.Responses = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, SerializerOptions.DefaultJsonSerializerOptions);
         }
 
         if (endpoint.Defs != null)
