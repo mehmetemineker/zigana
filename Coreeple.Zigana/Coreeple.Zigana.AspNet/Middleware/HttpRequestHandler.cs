@@ -20,9 +20,9 @@ public class HttpRequestHandler(
 
         await logService.BeginAsync(requestId, endpoint.Id, context.RequestAborted);
 
-        await actionExecuteManager.RunAsync(endpoint, context.RequestAborted);
+        var actionsOutput = await actionExecuteManager.RunAsync(endpoint, context.RequestAborted);
 
-        await context.Response.WriteAsJsonAsync(endpoint, context.RequestAborted);
+        await context.Response.WriteAsJsonAsync(actionsOutput, context.RequestAborted);
 
         await logService.EndAsync(requestId, context.RequestAborted);
 

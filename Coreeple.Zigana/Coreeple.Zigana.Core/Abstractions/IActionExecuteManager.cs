@@ -1,8 +1,9 @@
 ﻿using Coreeple.Zigana.Core.Types;
+using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.Core.Abstractions;
 
 public interface IActionExecuteManager
 {
-    Task RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default);
+    Task<JsonObject> RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default);
 }

@@ -11,7 +11,7 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
 {
     private const string HttpClientName = "ZiganaHttpClient";
 
-    public async Task ExecuteAsync(HttpRequestAction action, CancellationToken cancellationToken)
+    public async Task<JsonNode?> ExecuteAsync(HttpRequestAction action, CancellationToken cancellationToken)
     {
         var httpRequestMessage = new HttpRequestMessage(new HttpMethod(action.Method), action.Url);
         var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(action.Headers)!;
@@ -50,7 +50,7 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         var content = GetContent(contentAsByteArray, contentType);
 
-        action.Output = new JsonObject
+        return new JsonObject
         {
             ["statusCode"] = (int)httpResponseMessage.StatusCode,
             ["headers"] = JsonSerializer.SerializeToNode(responseHeaders),

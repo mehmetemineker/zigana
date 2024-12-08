@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ILogService, LogService>();
         services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
         services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
-        services.AddTransient<IActionExecutor<ParallelAction>, ParallelActionExecutor>();
 
         return new ZiganaBuilder(services, configuration);
     }

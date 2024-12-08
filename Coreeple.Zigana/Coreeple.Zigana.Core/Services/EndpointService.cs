@@ -1,5 +1,5 @@
 ﻿using Coreeple.Zigana.Core.Data.Repositories;
-using Coreeple.Zigana.Core.Json.Converters;
+using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Types;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
@@ -11,12 +11,6 @@ using System.Text.Json.Nodes;
 namespace Coreeple.Zigana.Core.Services;
 public class EndpointService(IApiRepository apiRepository, IEndpointRepository endpointRepository) : IEndpointService
 {
-    private static readonly JsonSerializerOptions jsonSerializerOptions = new()
-    {
-        Converters = { new ActionJsonConverter() },
-        PropertyNameCaseInsensitive = true,
-    };
-
     public async Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default)
     {
         var endpoints = await GetEndpointsAsync(cancellationToken);
@@ -92,17 +86,17 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Response != null)
         {
-            result.Response = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, jsonSerializerOptions);
+            result.Response = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, SerializerOptions.DefaultJsonSerializerOptions);
         }
 
         if (endpoint.Defs != null)
         {
-            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, jsonSerializerOptions);
+            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, SerializerOptions.DefaultJsonSerializerOptions);
         }
 
         if (endpoint.Actions != null)
         {
-            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, jsonSerializerOptions);
+            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, SerializerOptions.ActionConverterJsonSerializerOptions);
         }
 
         return result;
