@@ -25,7 +25,7 @@ public class EndpointRequestRepository(IDapperContext context) : IEndpointReques
 
     public async Task UpdateStatusAsync(Guid id, string status, CancellationToken cancellationToken = default)
     {
-        const string allowedStatus = "ERROR";
+        const string allowedStatus = "FAILED";
 
         if (status != allowedStatus)
         {
@@ -61,7 +61,7 @@ public class EndpointRequestRepository(IDapperContext context) : IEndpointReques
             {
                 Id = id,
                 EndDate = endDate,
-                Status = "FINISH"
+                Status = "COMPLETED"
             }, cancellationToken: cancellationToken));
     }
 }
