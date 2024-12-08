@@ -13,8 +13,8 @@ public class HttpRequestHandler(
     {
         var requestId = Guid.NewGuid();
 
-        SetDefaultResponseContentType(context);
-        SetRequestId(context, requestId);
+        SetHeaderDefaultResponseContentType(context);
+        SetHeaderRequestId(context, requestId);
 
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
@@ -29,13 +29,13 @@ public class HttpRequestHandler(
         await next(context);
     }
 
-    private static void SetRequestId(HttpContext context, Guid requestId)
+    private static void SetHeaderRequestId(HttpContext context, Guid requestId)
     {
         const string headerKey = "X-Request-Id";
         context.Request.Headers[headerKey] = requestId.ToString();
         context.Response.Headers[headerKey] = requestId.ToString();
     }
 
-    private static void SetDefaultResponseContentType(HttpContext context) =>
+    private static void SetHeaderDefaultResponseContentType(HttpContext context) =>
         context.Response.ContentType = "application/json";
 }
