@@ -2,6 +2,7 @@
 using Coreeple.Zigana.Core.Services;
 using Coreeple.Zigana.Core.Utils;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
 public class HttpRequestHandler(
@@ -38,10 +39,12 @@ public class HttpRequestHandler(
             context.Response.StatusCode = Convert.ToInt32(response["statusCode"]!.ToString());
             await context.Response.WriteAsJsonAsync(response["content"], context.RequestAborted);
         }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+        }
 
         await logService.EndAsync(requestId, context.RequestAborted);
-
-        await next(context);
     }
 
     private static void SetHeaderRequestId(HttpContext context, Guid requestId)
