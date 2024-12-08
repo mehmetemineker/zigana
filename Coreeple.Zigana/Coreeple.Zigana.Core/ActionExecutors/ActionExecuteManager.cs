@@ -1,6 +1,5 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Json;
-using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Core.Types.Actions;
 using Json.JsonE;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,33 +30,10 @@ public class ActionExecuteManager : IActionExecuteManager
         };
     }
 
-    public async Task<JsonObject> RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default)
+    public async Task RunAsync(Dictionary<string, Types.Action> actions, JsonObject context, CancellationToken cancellationToken = default)
     {
-        if (endpoint.Actions == null)
+        foreach (var (actionKey, action) in actions)
         {
-            return [];
-        }
-
-        var context = new JsonObject
-        {
-            ["defs"] = endpoint.Defs,
-            ["request"] = new JsonObject()
-            {
-                ["query"] = endpoint.Request?.Query,
-                ["headers"] = endpoint.Request?.Headers,
-                ["body"] = endpoint.Request?.Body,
-                ["route"] = endpoint.Request?.Route
-            },
-            ["actions"] = new JsonObject()
-        };
-
-        foreach (var (actionKey, action) in endpoint.Actions)
-        {
-            if (action == null)
-            {
-                continue;
-            }
-
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 var template = JsonSerializer.SerializeToNode(action, options: SerializerOptions.DefaultJsonSerializerOptions);
@@ -69,7 +45,5 @@ public class ActionExecuteManager : IActionExecuteManager
                 context["actions"]![actionKey] = output;
             }
         }
-
-        return context["actions"]!.AsObject();
     }
 }

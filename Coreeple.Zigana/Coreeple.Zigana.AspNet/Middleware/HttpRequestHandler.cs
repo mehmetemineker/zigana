@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Services;
+using Coreeple.Zigana.Core.Utils;
 using Microsoft.AspNetCore.Http;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
@@ -7,7 +8,8 @@ public class HttpRequestHandler(
     RequestDelegate next,
     IEndpointService endpointService,
     ILogService logService,
-    IActionExecuteManager actionExecuteManager)
+    IActionExecuteManager actionExecuteManager,
+    IResponseBuilder responseBuilder)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -20,9 +22,22 @@ public class HttpRequestHandler(
 
         await logService.BeginAsync(requestId, endpoint.Id, context.RequestAborted);
 
-        var actionsOutput = await actionExecuteManager.RunAsync(endpoint, context.RequestAborted);
+        var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
 
-        await context.Response.WriteAsJsonAsync(actionsOutput, context.RequestAborted);
+        if (endpoint.Actions != null)
+        {
+            await actionExecuteManager.RunAsync(endpoint.Actions, endpointContext, context.RequestAborted);
+        }
+
+        if (endpoint.Response != null)
+        {
+            await responseBuilder.Build(endpoint.Response, endpointContext);
+
+            var response = endpointContext["response"]!;
+
+            context.Response.StatusCode = Convert.ToInt32(response["statusCode"]!.ToString());
+            await context.Response.WriteAsJsonAsync(response["content"], context.RequestAborted);
+        }
 
         await logService.EndAsync(requestId, context.RequestAborted);
 

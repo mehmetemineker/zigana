@@ -3,6 +3,7 @@ using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.ActionExecutors;
 using Coreeple.Zigana.Core.Data;
 using Coreeple.Zigana.Core.Data.Repositories;
+using Coreeple.Zigana.Core.ResponseBuilders;
 using Coreeple.Zigana.Core.Services;
 using Coreeple.Zigana.Core.Types.Actions;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ILogService, LogService>();
         services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
         services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
-
+        services.AddTransient<IResponseBuilder, ResponseBuilder>();
         return new ZiganaBuilder(services, configuration);
     }
 }
