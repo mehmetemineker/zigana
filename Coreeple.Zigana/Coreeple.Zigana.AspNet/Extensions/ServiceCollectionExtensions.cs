@@ -15,6 +15,11 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
+        services.AddHttpClient("ZiganaHttpClient").ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+        });
+
         services.AddSingleton<IDapperContext, DapperContext>();
         services.AddTransient<IApiRepository, ApiRepository>();
         services.AddTransient<IEndpointRepository, EndpointRepository>();

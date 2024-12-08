@@ -44,6 +44,8 @@ public class ActionExecuteManager : IActionExecuteManager
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 await executor(action, cancellationToken);
+
+                var output = action.Output;
             }
         }
     }
