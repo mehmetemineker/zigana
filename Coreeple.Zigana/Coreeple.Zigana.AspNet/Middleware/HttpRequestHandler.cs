@@ -31,8 +31,9 @@ public class HttpRequestHandler(
 
     private static void SetRequestId(HttpContext context, Guid requestId)
     {
-        context.Request.Headers["X-Request-Id"] = requestId.ToString();
-        context.Response.Headers["X-Request-Id"] = requestId.ToString();
+        const string headerKey = "X-Request-Id";
+        context.Request.Headers[headerKey] = requestId.ToString();
+        context.Response.Headers[headerKey] = requestId.ToString();
     }
 
     private static void SetDefaultResponseContentType(HttpContext context) =>
