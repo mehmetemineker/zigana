@@ -10,7 +10,7 @@ public class ActionExecuteManager : IActionExecuteManager
 
     public ActionExecuteManager(IServiceProvider serviceProvider)
     {
-        _executors = new Dictionary<Type, Func<Types.Action, CancellationToken, Task>>
+        _executors = new()
         {
             {
                 typeof(HttpRequestAction), async (action, token) => {
