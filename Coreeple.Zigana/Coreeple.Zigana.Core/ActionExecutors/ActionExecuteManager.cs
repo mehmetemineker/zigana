@@ -36,6 +36,11 @@ public class ActionExecuteManager : IActionExecuteManager
         {
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
+                if (!JsonLogicProcessor.IsTruthy(action.When, context))
+                {
+                    continue;
+                }
+
                 var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
                 var evaluatedActionNode = JsonE.Evaluate(template, context);
                 var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
