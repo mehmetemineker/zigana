@@ -6,7 +6,6 @@ using System.Net;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
 public class HttpRequestHandler(
-    RequestDelegate next,
     IEndpointService endpointService,
     ILogService logService,
     IActionExecuteManager actionExecuteManager,
