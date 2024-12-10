@@ -6,6 +6,7 @@ using System.Net;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
 public class HttpRequestHandler(
+    RequestDelegate next,
     IEndpointService endpointService,
     ILogService logService,
     IActionExecuteManager actionExecuteManager,
@@ -44,6 +45,11 @@ public class HttpRequestHandler(
         }
 
         await logService.EndAsync(requestId, context.RequestAborted);
+
+        if (context.Response.HasStarted)
+        {
+            await next(context);
+        }
     }
 
     private static void SetHeaderRequestId(HttpContext context, Guid requestId)
