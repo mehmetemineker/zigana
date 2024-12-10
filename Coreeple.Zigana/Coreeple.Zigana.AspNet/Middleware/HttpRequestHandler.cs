@@ -32,7 +32,7 @@ public class HttpRequestHandler(
 
         if (endpoint.Responses != null)
         {
-            await responseBuilder.Build(endpoint.Responses, endpointContext);
+            responseBuilder.Build(endpoint.Responses, endpointContext);
 
             var response = endpointContext["response"]!;
 

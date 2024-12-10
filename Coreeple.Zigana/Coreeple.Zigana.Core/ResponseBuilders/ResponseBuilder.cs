@@ -8,19 +8,25 @@ using System.Text.Json.Nodes;
 namespace Coreeple.Zigana.Core.ResponseBuilders;
 public class ResponseBuilder : IResponseBuilder
 {
-    public async Task Build(Dictionary<string, Response> responses, JsonObject context)
+    public void Build(Dictionary<string, Response> responses, JsonObject context)
     {
-        var item = responses.First();
+        foreach (var item in responses)
+        {
+            var statusCode = item.Key;
+            var response = item.Value;
 
-        var statusCode = item.Key;
-        var response = item.Value;
+            if (JsonLogicProcessor.IsTruthy(response.When, context))
+            {
+                var template = JsonSerializer.SerializeToNode(response, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+                var evaluatedResponseNode = JsonE.Evaluate(template, context);
+                var evaluatedResponse = JsonSerializer.Deserialize<Response>(evaluatedResponseNode)!;
 
-        var template = JsonSerializer.SerializeToNode(response, options: SerializerOptions.DefaultJsonSerializerOptions);
-        var evaluatedResponseNode = JsonE.Evaluate(template, context);
-        var evaluatedResponse = JsonSerializer.Deserialize<Response>(evaluatedResponseNode)!;
+                context["response"] = JsonSerializer.SerializeToNode(evaluatedResponse, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+                context["response"]!["statusCode"] = statusCode;
 
-        context["response"] = JsonSerializer.SerializeToNode(evaluatedResponse, options: SerializerOptions.DefaultJsonSerializerOptions);
-        context["response"]!["statusCode"] = statusCode;
+                return;
+            }
+        }
     }
 }
 
