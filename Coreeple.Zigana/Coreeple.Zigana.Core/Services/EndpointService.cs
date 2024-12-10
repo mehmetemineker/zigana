@@ -86,17 +86,17 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Response != null)
         {
-            result.Responses = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, SerializerOptions.DefaultJsonSerializerOptions);
+            result.Responses = JsonSerializer.Deserialize<Dictionary<string, Response>>(endpoint.Response, CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
         }
 
         if (endpoint.Defs != null)
         {
-            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, SerializerOptions.DefaultJsonSerializerOptions);
+            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
         }
 
         if (endpoint.Actions != null)
         {
-            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, SerializerOptions.ActionConverterJsonSerializerOptions);
+            result.Actions = JsonSerializer.Deserialize<Dictionary<string, Types.Action>>(endpoint.Actions, CustomJsonSerializerOptions.ActionConverterJsonSerializerOptions);
         }
 
         return result;

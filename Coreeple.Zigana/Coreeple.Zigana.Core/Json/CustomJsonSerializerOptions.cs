@@ -2,7 +2,7 @@
 using System.Text.Json;
 
 namespace Coreeple.Zigana.Core.Json;
-public static class SerializerOptions
+public static class CustomJsonSerializerOptions
 {
     public static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new()
     {
