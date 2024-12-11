@@ -1,0 +1,6 @@
+services:
+  coreeple.zigana.gateway:
+    image: ${DOCKER_REGISTRY-}coreepleziganagateway
+    build:
+      context: .
+      dockerfile: Coreeple.Zigana.Gateway/Dockerfile

@@ -13,6 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Coreeple.Zigana.Gateway/Coreeple.Zigana.Gateway.csproj", "Coreeple.Zigana.Gateway/"]
+COPY ["Coreeple.Zigana.AspNet/Coreeple.Zigana.AspNet.csproj", "Coreeple.Zigana.AspNet/"]
+COPY ["Coreeple.Zigana.Core/Coreeple.Zigana.Core.csproj", "Coreeple.Zigana.Core/"]
 RUN dotnet restore "./Coreeple.Zigana.Gateway/Coreeple.Zigana.Gateway.csproj"
 COPY . .
 WORKDIR "/src/Coreeple.Zigana.Gateway"

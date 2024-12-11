@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Core", "Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.AspNet", "Coreeple.Zigana.AspNet\Coreeple.Zigana.AspNet.csproj", "{4058B66B-36BA-4FEE-B4F9-B01C7042AA7A}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4058B66B-36BA-4FEE-B4F9-B01C7042AA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4058B66B-36BA-4FEE-B4F9-B01C7042AA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4058B66B-36BA-4FEE-B4F9-B01C7042AA7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
