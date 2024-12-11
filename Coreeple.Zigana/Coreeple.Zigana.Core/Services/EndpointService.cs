@@ -127,6 +127,8 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         {
             endpoint.Request.Route = JsonNode.Parse(JsonSerializer.Serialize(routeParameters))?.AsObject();
         }
+
+        endpoint.RequestId = Guid.NewGuid();
     }
 
     private static Dictionary<string, object> StringValuesToObject(Dictionary<string, StringValues> values)

@@ -1,5 +1,7 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Json;
+using Coreeple.Zigana.Core.Services;
+using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Core.Types.Actions;
 using Json.JsonE;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +12,9 @@ namespace Coreeple.Zigana.Core.ActionExecutors;
 public class ActionExecuteManager : IActionExecuteManager
 {
     private readonly Dictionary<Type, Func<Types.Action, CancellationToken, Task<JsonNode?>>> _executors;
+    private readonly IEndpointLogService _endpointLogService;
 
-    public ActionExecuteManager(IServiceProvider serviceProvider)
+    public ActionExecuteManager(IServiceProvider serviceProvider, IEndpointLogService endpointLogService)
     {
         _executors = new()
         {
@@ -28,26 +31,45 @@ public class ActionExecuteManager : IActionExecuteManager
                 }
             }
         };
+
+        _endpointLogService = endpointLogService;
     }
 
-    public async Task RunAsync(Dictionary<string, Types.Action> actions, JsonObject context, CancellationToken cancellationToken = default)
+    public async Task RunAsync(Endpoint endpoint, JsonObject context, CancellationToken cancellationToken = default)
     {
+        var actions = endpoint.Actions ?? [];
+
         foreach (var (actionKey, action) in actions)
         {
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 if (!JsonLogicProcessor.IsTruthy(action.When, context))
                 {
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "PASSED", cancellationToken);
                     continue;
                 }
+
+                await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "PROCESSING", cancellationToken);
 
                 var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
                 var evaluatedActionNode = JsonE.Evaluate(template, context);
                 var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
 
-                var output = await executor(evaluatedAction, cancellationToken);
+                try
+                {
+                    var output = await executor(evaluatedAction, cancellationToken);
+                    context["actions"]![actionKey] = output;
 
-                context["actions"]![actionKey] = output;
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "SUCCEEDED", cancellationToken);
+                }
+                catch (Exception)
+                {
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "FAILED", cancellationToken);
+
+                    throw;
+                }
+
+
             }
         }
     }

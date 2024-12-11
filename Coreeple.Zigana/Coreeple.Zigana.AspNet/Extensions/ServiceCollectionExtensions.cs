@@ -24,9 +24,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDapperContext, DapperContext>();
         services.AddTransient<IApiRepository, ApiRepository>();
         services.AddTransient<IEndpointRepository, EndpointRepository>();
-        services.AddTransient<IEndpointRequestRepository, EndpointRequestRepository>();
+        services.AddTransient<IEndpointTransactionRepository, EndpointTransactionRepository>();
         services.AddTransient<IEndpointService, EndpointService>();
-        services.AddTransient<ILogService, LogService>();
+        services.AddTransient<IEndpointLogService, EndpointLogService>();
         services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
         services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
         services.AddTransient<IResponseBuilder, ResponseBuilder>();

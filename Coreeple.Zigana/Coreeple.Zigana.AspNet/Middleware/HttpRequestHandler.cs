@@ -8,27 +8,23 @@ namespace Coreeple.Zigana.AspNet.Middleware;
 public class HttpRequestHandler(
     RequestDelegate next,
     IEndpointService endpointService,
-    ILogService logService,
+    IEndpointLogService endpointLogService,
     IActionExecuteManager actionExecuteManager,
     IResponseBuilder responseBuilder)
 {
     public async Task InvokeAsync(HttpContext context)
     {
-        var requestId = Guid.NewGuid();
-
         SetHeaderDefaultResponseContentType(context);
-        SetHeaderRequestId(context, requestId);
 
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
-        await logService.BeginAsync(requestId, endpoint.Id, context.RequestAborted);
+        SetHeaderRequestId(context, endpoint.RequestId);
+
+        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "REQUEST", "BEGIN", "SUCCEEDED", context.RequestAborted);
 
         var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
 
-        if (endpoint.Actions != null)
-        {
-            await actionExecuteManager.RunAsync(endpoint.Actions, endpointContext, context.RequestAborted);
-        }
+        await actionExecuteManager.RunAsync(endpoint, endpointContext, context.RequestAborted);
 
         if (endpoint.Responses != null)
         {
@@ -44,7 +40,7 @@ public class HttpRequestHandler(
             context.Response.StatusCode = (int)HttpStatusCode.NoContent;
         }
 
-        await logService.EndAsync(requestId, context.RequestAborted);
+        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "REQUEST", "END", "SUCCEEDED", context.RequestAborted);
 
         if (context.Response.HasStarted)
         {
