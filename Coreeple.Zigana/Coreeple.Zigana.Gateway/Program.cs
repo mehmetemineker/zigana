@@ -12,6 +12,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapZiganaApi();
+
 app.UseZigana();
 
 app.Run();
