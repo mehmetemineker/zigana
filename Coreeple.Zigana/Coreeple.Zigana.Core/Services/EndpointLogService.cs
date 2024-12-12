@@ -3,16 +3,15 @@
 namespace Coreeple.Zigana.Core.Services;
 public class EndpointLogService(IEndpointTransactionRepository endpointRequestRepository) : IEndpointLogService
 {
-    public async Task AddAsync(Guid endpointId, Guid requestId, string type, string name,
-        string status, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Guid endpointId, Guid requestId, string name,
+        string status)
     {
-        await endpointRequestRepository.AddAsync(Guid.NewGuid(), endpointId, requestId, type, name,
-            DateTime.Now, status, cancellationToken);
+        await endpointRequestRepository.AddAsync(Guid.NewGuid(), endpointId, requestId, name,
+            DateTime.Now, status);
     }
 }
 
 public interface IEndpointLogService
 {
-    Task AddAsync(Guid endpointId, Guid requestId, string type, string name,
-        string status, CancellationToken cancellationToken = default);
+    Task AddAsync(Guid endpointId, Guid requestId, string name, string status);
 }

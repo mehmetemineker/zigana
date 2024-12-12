@@ -20,27 +20,43 @@ public class HttpRequestHandler(
 
         SetHeaderRequestId(context, endpoint.RequestId);
 
-        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "REQUEST", "BEGIN", "SUCCEEDED", context.RequestAborted);
+        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
         var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
 
-        await actionExecuteManager.RunAsync(endpoint, endpointContext, context.RequestAborted);
-
-        if (endpoint.Responses != null)
+        try
         {
-            responseBuilder.Build(endpoint.Responses, endpointContext);
+            await actionExecuteManager.RunAsync(endpoint, endpointContext, context.RequestAborted);
 
-            var response = endpointContext["response"]!;
+            if (endpoint.Responses != null)
+            {
+                responseBuilder.Build(endpoint.Responses, endpointContext);
 
-            context.Response.StatusCode = Convert.ToInt32(response["statusCode"]!.ToString());
-            await context.Response.WriteAsJsonAsync(response["content"], context.RequestAborted);
+                var response = endpointContext["response"]!;
+
+                context.Response.StatusCode = Convert.ToInt32(response["statusCode"]!.ToString());
+                await context.Response.WriteAsJsonAsync(response["content"], context.RequestAborted);
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
+
+            await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "SUCCEEDED");
         }
-        else
+        catch
         {
-            context.Response.StatusCode = (int)HttpStatusCode.NoContent;
-        }
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "ABORTED");
+            }
+            else
+            {
+                await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "FAILED");
+            }
 
-        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "REQUEST", "END", "SUCCEEDED", context.RequestAborted);
+            throw;
+        }
 
         if (context.Response.HasStarted)
         {

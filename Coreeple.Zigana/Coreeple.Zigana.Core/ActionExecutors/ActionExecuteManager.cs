@@ -45,11 +45,11 @@ public class ActionExecuteManager : IActionExecuteManager
             {
                 if (!JsonLogicProcessor.IsTruthy(action.When, context))
                 {
-                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "PASSED", cancellationToken);
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "PASSED");
                     continue;
                 }
 
-                await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "PROCESSING", cancellationToken);
+                await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "PROCESSING");
 
                 var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
                 var evaluatedActionNode = JsonE.Evaluate(template, context);
@@ -60,11 +60,11 @@ public class ActionExecuteManager : IActionExecuteManager
                     var output = await executor(evaluatedAction, cancellationToken);
                     context["actions"]![actionKey] = output;
 
-                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "SUCCEEDED", cancellationToken);
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "SUCCEEDED");
                 }
-                catch (Exception)
+                catch
                 {
-                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "ACTION", actionKey, "FAILED", cancellationToken);
+                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "FAILED");
 
                     throw;
                 }
