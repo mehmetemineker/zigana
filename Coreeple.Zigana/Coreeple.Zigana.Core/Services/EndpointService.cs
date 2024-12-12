@@ -129,6 +129,11 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         }
 
         endpoint.RequestId = Guid.NewGuid();
+
+        if (context.Request.Headers.TryGetValue("X-Request-Id", out var requestId))
+        {
+            endpoint.RequestId = Guid.Parse(requestId.ToString());
+        }
     }
 
     private static Dictionary<string, object> StringValuesToObject(Dictionary<string, StringValues> values)

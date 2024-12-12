@@ -64,12 +64,17 @@ public class ActionExecuteManager : IActionExecuteManager
                 }
                 catch
                 {
-                    await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "FAILED");
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "ABORTED");
+                    }
+                    else
+                    {
+                        await _endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, actionKey, "FAILED");
+                    }
 
                     throw;
                 }
-
-
             }
         }
     }
