@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEndpointLogService, EndpointLogService>();
         services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
         services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
+        services.AddTransient<IActionExecutor<HtmlParserAction>, HtmlParserActionExecutor>();
         services.AddTransient<IResponseBuilder, ResponseBuilder>();
 
         return new ZiganaBuilder(services, configuration);

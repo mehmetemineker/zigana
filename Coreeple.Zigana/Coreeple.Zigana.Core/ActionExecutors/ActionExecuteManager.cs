@@ -29,7 +29,13 @@ public class ActionExecuteManager : IActionExecuteManager
                     var executor = serviceProvider.GetRequiredService<IActionExecutor<ParallelAction>>();
                     return  await executor.ExecuteAsync((ParallelAction)action, cancellationToken);
                 }
-            }
+            },
+            {
+                typeof(HtmlParserAction), async (action, cancellationToken) => {
+                    var executor = serviceProvider.GetRequiredService<IActionExecutor<HtmlParserAction>>();
+                    return await executor.ExecuteAsync((HtmlParserAction)action, cancellationToken);
+                }
+            },
         };
 
         _endpointLogService = endpointLogService;

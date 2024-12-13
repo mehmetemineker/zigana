@@ -14,6 +14,7 @@ public class ActionJsonConverter : JsonConverter<Types.Action>
         return type switch
         {
             "http-request" => root.Deserialize<HttpRequestAction>(options),
+            "html-parser" => root.Deserialize<HtmlParserAction>(options),
             _ => throw new NotSupportedException($"Unsupported action type: {type}")
         };
     }
