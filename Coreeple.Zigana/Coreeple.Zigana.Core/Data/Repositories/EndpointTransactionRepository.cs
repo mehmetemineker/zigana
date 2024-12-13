@@ -13,6 +13,8 @@ public class EndpointTransactionRepository(IDapperContext context) : IEndpointTr
         var sql = """
             INSERT INTO "EndpointTransactions" ("Id", "EndpointId", "RequestId", "Name", "Date", "Status")
             VALUES (@Id, @EndpointId, @RequestId, @Name, @Date, @Status)
+            ON CONFLICT("EndpointId", "RequestId", "Name", "Status")
+            DO UPDATE SET "Date" = @Date
         """;
 
         var result = await connection

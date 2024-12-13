@@ -128,11 +128,9 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
             endpoint.Request.Route = JsonNode.Parse(JsonSerializer.Serialize(routeParameters))?.AsObject();
         }
 
-        endpoint.RequestId = Guid.NewGuid();
-
-        if (context.Request.Headers.TryGetValue("X-Request-Id", out var requestId))
+        if (Guid.TryParse(context.TraceIdentifier, out var requestId))
         {
-            endpoint.RequestId = Guid.Parse(requestId.ToString());
+            endpoint.RequestId = requestId;
         }
     }
 

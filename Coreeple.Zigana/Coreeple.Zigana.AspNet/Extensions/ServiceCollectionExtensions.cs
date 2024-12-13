@@ -6,7 +6,9 @@ using Coreeple.Zigana.Core.Data.Repositories;
 using Coreeple.Zigana.Core.ResponseBuilders;
 using Coreeple.Zigana.Core.Services;
 using Coreeple.Zigana.Core.Types.Actions;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
@@ -21,6 +23,20 @@ public static class ServiceCollectionExtensions
             ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
         });
 
+        services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance =
+                    $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+
+                Activity? activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
+        });
+
         services.AddSingleton<IDapperContext, DapperContext>();
         services.AddTransient<IApiRepository, ApiRepository>();
         services.AddTransient<IEndpointRepository, EndpointRepository>();
@@ -30,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
         services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
         services.AddTransient<IResponseBuilder, ResponseBuilder>();
+
         return new ZiganaBuilder(services, configuration);
     }
 }

@@ -18,8 +18,6 @@ public class HttpRequestHandler(
 
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
-        SetHeaderRequestId(context, endpoint.RequestId);
-
         endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
         var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
@@ -63,9 +61,6 @@ public class HttpRequestHandler(
             await next(context);
         }
     }
-
-    private static void SetHeaderRequestId(HttpContext context, Guid requestId) =>
-        context.Response.Headers["X-Request-Id"] = requestId.ToString();
 
     private static void SetHeaderDefaultResponseContentType(HttpContext context) =>
         context.Response.ContentType = "application/json";

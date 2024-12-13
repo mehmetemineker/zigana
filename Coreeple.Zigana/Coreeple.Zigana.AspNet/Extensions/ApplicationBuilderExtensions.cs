@@ -7,6 +7,10 @@ public static class ApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(app);
 
+        app.UseExceptionHandler();
+        app.UseStatusCodePages();
+
+        app.UseMiddleware<TraceIdMiddleware>();
         app.UseMiddleware<HttpRequestHandler>();
 
         return app;

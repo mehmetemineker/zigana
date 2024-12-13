@@ -51,12 +51,12 @@ public class ActionExecuteManager : IActionExecuteManager
 
                 _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "PROCESSING");
 
-                var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
-                var evaluatedActionNode = JsonE.Evaluate(template, context);
-                var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
-
                 try
                 {
+                    var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+                    var evaluatedActionNode = JsonE.Evaluate(template, context);
+                    var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
+
                     var output = await executor(evaluatedAction, cancellationToken);
                     context["actions"]![actionKey] = output;
 
