@@ -20,7 +20,7 @@ public class HttpRequestHandler(
 
         SetHeaderRequestId(context, endpoint.RequestId);
 
-        await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
+        endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
         var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
 
@@ -42,17 +42,17 @@ public class HttpRequestHandler(
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
 
-            await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "SUCCEEDED");
+            endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "SUCCEEDED");
         }
         catch
         {
             if (context.RequestAborted.IsCancellationRequested)
             {
-                await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "ABORTED");
+                endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "ABORTED");
             }
             else
             {
-                await endpointLogService.AddAsync(endpoint.Id, endpoint.RequestId, "RequestFinish", "FAILED");
+                endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "FAILED");
             }
 
             throw;
@@ -64,12 +64,8 @@ public class HttpRequestHandler(
         }
     }
 
-    private static void SetHeaderRequestId(HttpContext context, Guid requestId)
-    {
-        const string headerKey = "X-Request-Id";
-        context.Request.Headers[headerKey] = requestId.ToString();
-        context.Response.Headers[headerKey] = requestId.ToString();
-    }
+    private static void SetHeaderRequestId(HttpContext context, Guid requestId) =>
+        context.Response.Headers["X-Request-Id"] = requestId.ToString();
 
     private static void SetHeaderDefaultResponseContentType(HttpContext context) =>
         context.Response.ContentType = "application/json";
