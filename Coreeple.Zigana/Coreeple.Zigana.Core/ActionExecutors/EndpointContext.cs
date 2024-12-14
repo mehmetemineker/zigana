@@ -5,11 +5,15 @@ namespace Coreeple.Zigana.Core.ActionExecutors;
 public class EndpointContext : IEndpointContext
 {
     private readonly JsonObject _context;
+    private Guid Id = Guid.NewGuid();
+    private Guid RequestId = Guid.NewGuid();
 
     public EndpointContext()
     {
         _context = new JsonObject
         {
+            ["id"] = Guid.NewGuid(),
+            ["requestId"] = Guid.NewGuid(),
             ["defs"] = new JsonObject(),
             ["request"] = new JsonObject()
             {
@@ -19,25 +23,21 @@ public class EndpointContext : IEndpointContext
                 ["route"] = new JsonObject()
             },
             ["actions"] = new JsonObject(),
-            ["response"] = new JsonObject()
+            ["response"] = new JsonObject(),
         };
     }
 
-    public JsonObject Get() => _context;
-
+    public void SetId(Guid value) => Id = value;
+    public void SetRequestId(Guid value) => RequestId = value;
     public void SetDefs(JsonObject value) => _context["defs"] = value;
-
     public void SetRequestQuery(JsonObject value) => _context["request"]!["query"] = value;
-
     public void SetRequestHeaders(JsonObject value) => _context["request"]!["headers"] = value;
-
     public void SetRequestBody(JsonNode value) => _context["request"]!["body"] = value;
-
     public void SetRequestRoute(JsonObject value) => _context["request"]!["route"] = value;
-
     public void AddAction(string key, JsonObject value) => _context["actions"]![key] = value;
-
     public void SetResponse(JsonObject value) => _context["response"] = value;
-
+    public JsonObject Get() => _context;
+    public Guid GetId() => Id;
+    public Guid GetRequestId() => RequestId;
     public JsonObject GetResponse() => _context["response"]!.AsObject();
 }

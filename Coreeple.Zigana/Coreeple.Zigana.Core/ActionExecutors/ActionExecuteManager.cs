@@ -1,7 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Services;
-using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Core.Types.Actions;
 using Json.JsonE;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,21 +42,19 @@ public class ActionExecuteManager : IActionExecuteManager
         _endpointLogService = endpointLogService;
     }
 
-    public async Task RunAsync(Endpoint endpoint, CancellationToken cancellationToken = default)
+    public async Task RunAsync(Dictionary<string, Types.Action> actions, CancellationToken cancellationToken = default)
     {
-        var actions = endpoint.Actions ?? [];
-
         foreach (var (actionKey, action) in actions)
         {
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 if (!JsonLogicProcessor.IsTruthy(action.When, _endpointContext.Get()))
                 {
-                    _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "PASSED");
+                    _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PASSED");
                     continue;
                 }
 
-                _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "PROCESSING");
+                _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PROCESSING");
 
                 try
                 {
@@ -68,17 +65,17 @@ public class ActionExecuteManager : IActionExecuteManager
                     var output = await executor(evaluatedAction, cancellationToken);
                     _endpointContext.AddAction(actionKey, output!.AsObject());
 
-                    _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "SUCCEEDED");
+                    _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "SUCCEEDED");
                 }
                 catch
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "ABORTED");
+                        _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "ABORTED");
                     }
                     else
                     {
-                        _endpointLogService.Add(endpoint.Id, endpoint.RequestId, actionKey, "FAILED");
+                        _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "FAILED");
                     }
 
                     throw;

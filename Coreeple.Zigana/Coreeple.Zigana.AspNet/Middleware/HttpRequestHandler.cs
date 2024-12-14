@@ -20,6 +20,8 @@ public class HttpRequestHandler(RequestDelegate next)
 
         endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
+        endpointContext.SetId(endpoint.Id);
+        endpointContext.SetRequestId(endpoint.RequestId);
         endpointContext.SetDefs(endpoint.Defs);
         endpointContext.SetRequestQuery(endpoint.Request.Query);
         endpointContext.SetRequestHeaders(endpoint.Request.Headers);
@@ -28,7 +30,10 @@ public class HttpRequestHandler(RequestDelegate next)
 
         try
         {
-            await actionExecuteManager.RunAsync(endpoint, context.RequestAborted);
+            if (endpoint.Actions != null)
+            {
+                await actionExecuteManager.RunAsync(endpoint.Actions, context.RequestAborted);
+            }
 
             if (endpoint.Responses != null)
             {
