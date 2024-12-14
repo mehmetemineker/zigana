@@ -1,18 +1,18 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Services;
-using Coreeple.Zigana.Core.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
 namespace Coreeple.Zigana.AspNet.Middleware;
-public class HttpRequestHandler(
-    RequestDelegate next,
-    IEndpointService endpointService,
-    IEndpointLogService endpointLogService,
-    IActionExecuteManager actionExecuteManager,
-    IResponseBuilder responseBuilder)
+public class HttpRequestHandler(RequestDelegate next)
 {
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(
+        HttpContext context,
+        IEndpointService endpointService,
+        IEndpointLogService endpointLogService,
+        IEndpointContext endpointContext,
+        IActionExecuteManager actionExecuteManager,
+        IResponseBuilder responseBuilder)
     {
         SetHeaderDefaultResponseContentType(context);
 
@@ -20,17 +20,21 @@ public class HttpRequestHandler(
 
         endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
-        var endpointContext = JsonUtils.CreateEndpointContext(endpoint);
+        endpointContext.SetDefs(endpoint.Defs);
+        endpointContext.SetRequestQuery(endpoint.Request.Query);
+        endpointContext.SetRequestHeaders(endpoint.Request.Headers);
+        endpointContext.SetRequestBody(endpoint.Request.Body);
+        endpointContext.SetRequestRoute(endpoint.Request.Route);
 
         try
         {
-            await actionExecuteManager.RunAsync(endpoint, endpointContext, context.RequestAborted);
+            await actionExecuteManager.RunAsync(endpoint, context.RequestAborted);
 
             if (endpoint.Responses != null)
             {
-                responseBuilder.Build(endpoint.Responses, endpointContext);
+                responseBuilder.Build(endpoint.Responses);
 
-                var response = endpointContext["response"]!;
+                var response = endpointContext.GetResponse();
 
                 context.Response.StatusCode = Convert.ToInt32(response["statusCode"]!.ToString());
                 await context.Response.WriteAsJsonAsync(response["content"], context.RequestAborted);

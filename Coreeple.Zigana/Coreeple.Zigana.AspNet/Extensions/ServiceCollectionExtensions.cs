@@ -38,15 +38,16 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddSingleton<IDapperContext, DapperContext>();
-        services.AddTransient<IApiRepository, ApiRepository>();
-        services.AddTransient<IEndpointRepository, EndpointRepository>();
-        services.AddTransient<IEndpointTransactionRepository, EndpointTransactionRepository>();
-        services.AddTransient<IEndpointService, EndpointService>();
-        services.AddTransient<IEndpointLogService, EndpointLogService>();
-        services.AddTransient<IActionExecuteManager, ActionExecuteManager>();
-        services.AddTransient<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
-        services.AddTransient<IActionExecutor<HtmlParserAction>, HtmlParserActionExecutor>();
-        services.AddTransient<IResponseBuilder, ResponseBuilder>();
+        services.AddScoped<IApiRepository, ApiRepository>();
+        services.AddScoped<IEndpointRepository, EndpointRepository>();
+        services.AddScoped<IEndpointTransactionRepository, EndpointTransactionRepository>();
+        services.AddScoped<IEndpointService, EndpointService>();
+        services.AddScoped<IEndpointLogService, EndpointLogService>();
+        services.AddScoped<IEndpointContext, EndpointContext>();
+        services.AddScoped<IActionExecuteManager, ActionExecuteManager>();
+        services.AddScoped<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
+        services.AddScoped<IActionExecutor<HtmlParserAction>, HtmlParserActionExecutor>();
+        services.AddScoped<IResponseBuilder, ResponseBuilder>();
 
         return new ZiganaBuilder(services, configuration);
     }
