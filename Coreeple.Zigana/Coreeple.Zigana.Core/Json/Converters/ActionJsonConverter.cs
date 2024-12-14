@@ -15,6 +15,7 @@ public class ActionJsonConverter : JsonConverter<Types.Action>
         {
             "http-request" => root.Deserialize<HttpRequestAction>(options),
             "html-parser" => root.Deserialize<HtmlParserAction>(options),
+            "parallel" => root.Deserialize<ParallelAction>(options),
             _ => throw new NotSupportedException($"Unsupported action type: {type}")
         };
     }

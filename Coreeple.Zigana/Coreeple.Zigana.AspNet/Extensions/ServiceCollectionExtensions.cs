@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActionExecuteManager, ActionExecuteManager>();
         services.AddScoped<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
         services.AddScoped<IActionExecutor<HtmlParserAction>, HtmlParserActionExecutor>();
+        services.AddScoped<IActionExecutor<ParallelAction>, ParallelActionExecutor>();
         services.AddScoped<IResponseBuilder, ResponseBuilder>();
 
         return new ZiganaBuilder(services, configuration);

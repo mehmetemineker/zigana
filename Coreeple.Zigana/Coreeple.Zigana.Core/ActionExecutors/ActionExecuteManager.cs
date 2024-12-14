@@ -27,7 +27,7 @@ public class ActionExecuteManager : IActionExecuteManager
             {
                 typeof(ParallelAction), async (action, cancellationToken) => {
                     var executor = serviceProvider.GetRequiredService<IActionExecutor<ParallelAction>>();
-                    return  await executor.ExecuteAsync((ParallelAction)action, cancellationToken);
+                    return await executor.ExecuteAsync((ParallelAction)action, cancellationToken);
                 }
             },
             {
@@ -58,12 +58,19 @@ public class ActionExecuteManager : IActionExecuteManager
 
                 try
                 {
-                    var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
-                    var evaluatedActionNode = JsonE.Evaluate(template, _endpointContext.Get());
-                    var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
+                    if (action is ParallelAction)
+                    {
+                        await executor(action, cancellationToken);
+                    }
+                    else
+                    {
+                        var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+                        var evaluatedActionNode = JsonE.Evaluate(template, _endpointContext.Get());
+                        var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
 
-                    var output = await executor(evaluatedAction, cancellationToken);
-                    _endpointContext.AddAction(actionKey, output!.AsObject());
+                        var output = await executor(evaluatedAction, cancellationToken);
+                        _endpointContext.AddAction(actionKey, output!.AsObject());
+                    }
 
                     _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "SUCCEEDED");
                 }

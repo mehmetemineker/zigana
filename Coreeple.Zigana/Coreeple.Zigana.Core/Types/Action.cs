@@ -6,6 +6,7 @@ namespace Coreeple.Zigana.Core.Types;
 
 [JsonDerivedType(typeof(HttpRequestAction))]
 [JsonDerivedType(typeof(HtmlParserAction))]
+[JsonDerivedType(typeof(ParallelAction))]
 public class Action
 {
     public required string Type { get; set; }
