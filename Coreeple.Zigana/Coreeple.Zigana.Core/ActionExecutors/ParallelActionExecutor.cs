@@ -11,17 +11,11 @@ public class ParallelActionExecutor(IActionExecuteManager actionExecuteManager) 
 
         foreach (var subAction in action.Actions)
         {
-            tasks.Add(actionExecuteManager.RunAsync(new Dictionary<string, Types.Action> { { subAction.Key, subAction.Value } }, cancellationToken));
+            tasks.Add(actionExecuteManager.RunAsync(
+                new Dictionary<string, Types.Action> { { subAction.Key, subAction.Value } }, cancellationToken));
         }
 
-        if (action.Continue == "when-all")
-        {
-            await Task.WhenAll(tasks);
-        }
-        else if (action.Continue == "when-any")
-        {
-            await Task.WhenAny(tasks);
-        }
+        await Task.WhenAll(tasks);
 
         return default;
     }
