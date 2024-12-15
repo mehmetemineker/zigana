@@ -91,7 +91,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         if (endpoint.Defs != null)
         {
-            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+            result.Defs = JsonSerializer.Deserialize<JsonObject>(endpoint.Defs, CustomJsonSerializerOptions.DefaultJsonSerializerOptions) ?? [];
         }
 
         if (endpoint.Actions != null)
@@ -114,18 +114,18 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
         endpoint.Request = new Request
         {
-            Query = JsonNode.Parse(JsonSerializer.Serialize(query))?.AsObject(),
-            Headers = JsonNode.Parse(JsonSerializer.Serialize(headers))?.AsObject(),
+            Query = JsonNode.Parse(JsonSerializer.Serialize(query))?.AsObject() ?? [],
+            Headers = JsonNode.Parse(JsonSerializer.Serialize(headers))?.AsObject() ?? [],
         };
 
         if (context.Request.ContentType == "application/json" && !string.IsNullOrEmpty(body))
         {
-            endpoint.Request.Body = JsonNode.Parse(body);
+            endpoint.Request.Body = JsonNode.Parse(body) ?? JsonNode.Parse("{}")!;
         }
 
         if (routeParameters.Count > 0)
         {
-            endpoint.Request.Route = JsonNode.Parse(JsonSerializer.Serialize(routeParameters))?.AsObject();
+            endpoint.Request.Route = JsonNode.Parse(JsonSerializer.Serialize(routeParameters))?.AsObject() ?? [];
         }
 
         if (Guid.TryParse(context.TraceIdentifier, out var requestId))
