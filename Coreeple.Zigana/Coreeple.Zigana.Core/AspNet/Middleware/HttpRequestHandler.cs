@@ -18,7 +18,7 @@ public class HttpRequestHandler(RequestDelegate next)
 
         var endpoint = await endpointService.FindEndpointAsync(context, context.RequestAborted);
 
-        endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
+        endpointLogService.AddTransaction(endpoint.Id, endpoint.RequestId, "RequestStart", "SUCCEEDED");
 
         endpointContext.SetId(endpoint.Id);
         endpointContext.SetRequestId(endpoint.RequestId);
@@ -49,17 +49,17 @@ public class HttpRequestHandler(RequestDelegate next)
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
 
-            endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "SUCCEEDED");
+            endpointLogService.AddTransaction(endpoint.Id, endpoint.RequestId, "RequestFinish", "SUCCEEDED");
         }
         catch
         {
             if (context.RequestAborted.IsCancellationRequested)
             {
-                endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "ABORTED");
+                endpointLogService.AddTransaction(endpoint.Id, endpoint.RequestId, "RequestFinish", "ABORTED");
             }
             else
             {
-                endpointLogService.Add(endpoint.Id, endpoint.RequestId, "RequestFinish", "FAILED");
+                endpointLogService.AddTransaction(endpoint.Id, endpoint.RequestId, "RequestFinish", "FAILED");
             }
 
             throw;

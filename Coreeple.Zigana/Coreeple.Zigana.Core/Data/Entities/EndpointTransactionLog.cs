@@ -1,7 +1,7 @@
 ﻿namespace Coreeple.Zigana.Core.Data.Entities;
-public class EndpointRequestLog
+public class EndpointTransactionLog
 {
     public Guid Id { get; set; }
-    public Guid EndpointRequestId { get; set; }
+    public Guid TransactionId { get; set; }
     public string? Log { get; set; }
 }

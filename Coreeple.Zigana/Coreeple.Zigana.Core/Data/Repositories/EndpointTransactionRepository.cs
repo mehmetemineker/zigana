@@ -5,15 +5,15 @@ namespace Coreeple.Zigana.Core.Data.Repositories;
 public class EndpointTransactionRepository(IDapperContext context) : IEndpointTransactionRepository
 {
     public async Task AddAsync(Guid id, Guid endpointId, Guid requestId,
-        string name, DateTime date, string status,
+        string name, string status, DateTime date,
         CancellationToken cancellationToken = default)
     {
         using var connection = context.CreateConnection();
 
         var sql = """
-            INSERT INTO "EndpointTransactions" ("Id", "EndpointId", "RequestId", "Name", "Date", "Status")
-            VALUES (@Id, @EndpointId, @RequestId, @Name, @Date, @Status)
-            ON CONFLICT("EndpointId", "RequestId", "Name", "Status")
+            INSERT INTO "EndpointTransactions" ("Id", "EndpointId", "RequestId", "Name", "Status", "Date")
+            VALUES (@Id, @EndpointId, @RequestId, @Name, @Status, @Date)
+            ON CONFLICT("Id", "EndpointId", "RequestId", "Name", "Status")
             DO UPDATE SET "Date" = @Date
         """;
 
@@ -24,8 +24,8 @@ public class EndpointTransactionRepository(IDapperContext context) : IEndpointTr
                 EndpointId = endpointId,
                 RequestId = requestId,
                 Name = name,
+                Status = status,
                 Date = date,
-                Status = status
             }, cancellationToken: cancellationToken));
     }
 }
@@ -33,6 +33,6 @@ public class EndpointTransactionRepository(IDapperContext context) : IEndpointTr
 public interface IEndpointTransactionRepository
 {
     Task AddAsync(Guid id, Guid endpointId, Guid requestId,
-        string name, DateTime date, string status,
-        CancellationToken cancellationToken = default);
+            string name, string status, DateTime date,
+            CancellationToken cancellationToken = default);
 }

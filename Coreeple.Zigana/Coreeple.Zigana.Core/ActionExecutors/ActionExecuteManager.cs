@@ -11,10 +11,10 @@ namespace Coreeple.Zigana.Core.ActionExecutors;
 public class ActionExecuteManager : IActionExecuteManager
 {
     private readonly Dictionary<Type, Func<Types.Action, CancellationToken, Task<JsonNode?>>> _executors;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IEndpointContext _endpointContext;
-    private readonly IEndpointLogService _endpointLogService;
 
-    public ActionExecuteManager(IServiceProvider serviceProvider, IEndpointContext endpointContext, IEndpointLogService endpointLogService)
+    public ActionExecuteManager(IServiceProvider serviceProvider, IEndpointContext endpointContext)
     {
         _executors = new()
         {
@@ -38,23 +38,25 @@ public class ActionExecuteManager : IActionExecuteManager
             },
         };
 
+        _serviceProvider = serviceProvider;
         _endpointContext = endpointContext;
-        _endpointLogService = endpointLogService;
     }
 
     public async Task RunAsync(Dictionary<string, Types.Action> actions, CancellationToken cancellationToken = default)
     {
+        var endpointLogService = _serviceProvider.GetRequiredService<IEndpointLogService>();
+
         foreach (var (actionKey, action) in actions)
         {
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 if (!JsonLogicProcessor.IsTruthy(action.When, _endpointContext.Get()))
                 {
-                    _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PASSED");
+                    endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PASSED");
                     continue;
                 }
 
-                _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PROCESSING");
+                endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "PROCESSING");
 
                 try
                 {
@@ -70,20 +72,24 @@ public class ActionExecuteManager : IActionExecuteManager
 
                         var output = await executor(evaluatedAction, cancellationToken);
                         _endpointContext.AddAction(actionKey, output!.AsObject());
+
+                        endpointLogService.AddLog(JsonSerializer.Serialize(evaluatedAction));
                     }
 
-                    _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "SUCCEEDED");
+                    endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "SUCCEEDED");
                 }
-                catch
+                catch (Exception ex)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "ABORTED");
+                        endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "ABORTED");
                     }
                     else
                     {
-                        _endpointLogService.Add(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "FAILED");
+                        endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "FAILED");
                     }
+
+                    endpointLogService.AddLog(ex.Message);
 
                     throw;
                 }
