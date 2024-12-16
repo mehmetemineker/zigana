@@ -15,7 +15,14 @@ public class ParallelActionExecutor(IActionExecuteManager actionExecuteManager) 
                 new Dictionary<string, Types.Action> { { subAction.Key, subAction.Value } }, cancellationToken));
         }
 
-        await Task.WhenAll(tasks);
+        try
+        {
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception)
+        {
+            // TODO: diaper
+        }
 
         return default;
     }
