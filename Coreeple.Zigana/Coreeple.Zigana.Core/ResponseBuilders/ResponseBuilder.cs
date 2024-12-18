@@ -1,7 +1,7 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Types;
-using Json.JsonE;
+using Coreeple.Zigana.Core.Utils;
 using System.Text.Json;
 
 namespace Coreeple.Zigana.Core.ResponseBuilders;
@@ -16,9 +16,7 @@ public class ResponseBuilder(IEndpointContext endpointContext) : IResponseBuilde
 
             if (JsonLogicProcessor.IsTruthy(response.When, endpointContext.Get()))
             {
-                var template = JsonSerializer.SerializeToNode(response, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
-                var evaluatedResponseNode = JsonE.Evaluate(template, endpointContext.Get());
-                var evaluatedResponse = JsonSerializer.Deserialize<Response>(evaluatedResponseNode)!;
+                var evaluatedResponse = (Response)JsonUtils.EvaluateObject(response, endpointContext.Get());
 
                 var responseJsonObject = JsonSerializer.SerializeToNode(evaluatedResponse, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions)!.AsObject();
 

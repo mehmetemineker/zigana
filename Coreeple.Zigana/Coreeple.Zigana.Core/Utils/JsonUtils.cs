@@ -1,4 +1,7 @@
-﻿using Coreeple.Zigana.Core.Types;
+﻿using Coreeple.Zigana.Core.Json;
+using Coreeple.Zigana.Core.Types;
+using Json.JsonE;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.Core.Utils;
@@ -19,5 +22,14 @@ public class JsonUtils
             ["actions"] = new JsonObject(),
             ["response"] = new JsonObject()
         };
+    }
+
+    public static object EvaluateObject(object obj, JsonObject context)
+    {
+        var template = JsonSerializer.SerializeToNode(obj, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
+        var evaluatedNode = JsonE.Evaluate(template, context);
+        var evaluated = JsonSerializer.Deserialize(evaluatedNode, obj.GetType())!;
+
+        return evaluated;
     }
 }

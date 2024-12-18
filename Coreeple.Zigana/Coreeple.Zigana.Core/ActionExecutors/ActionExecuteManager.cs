@@ -2,7 +2,7 @@
 using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Services;
 using Coreeple.Zigana.Core.Types.Actions;
-using Json.JsonE;
+using Coreeple.Zigana.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -66,9 +66,7 @@ public class ActionExecuteManager : IActionExecuteManager
                     }
                     else
                     {
-                        var template = JsonSerializer.SerializeToNode(action, options: CustomJsonSerializerOptions.DefaultJsonSerializerOptions);
-                        var evaluatedActionNode = JsonE.Evaluate(template, _endpointContext.Get());
-                        var evaluatedAction = (Types.Action)JsonSerializer.Deserialize(evaluatedActionNode, action.GetType())!;
+                        var evaluatedAction = (Types.Action)JsonUtils.EvaluateObject(action, _endpointContext.Get());
 
                         var output = await executor(evaluatedAction, cancellationToken);
                         _endpointContext.AddAction(actionKey, output!.AsObject());
