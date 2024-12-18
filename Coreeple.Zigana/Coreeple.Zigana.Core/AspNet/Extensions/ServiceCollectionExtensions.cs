@@ -8,7 +8,6 @@ using Coreeple.Zigana.Core.Services;
 using Coreeple.Zigana.Core.Types.Actions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
@@ -27,12 +26,10 @@ public static class ServiceCollectionExtensions
         {
             options.CustomizeProblemDetails = context =>
             {
-                context.ProblemDetails.Instance =
-                    $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
 
+                context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
                 context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
-
-                Activity? activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
                 context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
             };
         });
