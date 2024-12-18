@@ -1,9 +1,9 @@
 ﻿using Coreeple.Zigana.Core.Data.Repositories;
 using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Types;
+using Coreeple.Zigana.Core.Utils;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
-using Microsoft.Extensions.Primitives;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -108,8 +108,8 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         Dictionary<string, object?> routeParameters,
         CancellationToken cancellationToken = default)
     {
-        var query = StringValuesToObject(context.Request.Query.ToDictionary());
-        var headers = StringValuesToObject(context.Request.Headers.ToDictionary());
+        var query = HttpUtils.StringValuesToObject(context.Request.Query.ToDictionary());
+        var headers = HttpUtils.StringValuesToObject(context.Request.Headers.ToDictionary());
         var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync(cancellationToken);
 
         endpoint.Request = new Request
@@ -132,14 +132,6 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         {
             endpoint.RequestId = requestId;
         }
-    }
-
-    private static Dictionary<string, object> StringValuesToObject(Dictionary<string, StringValues> values)
-    {
-        return values.Select(m => new KeyValuePair<string, object>(
-                m.Key,
-                m.Value.Count == 1 ? m.Value.ToString() : m.Value.ToArray()))
-            .ToDictionary();
     }
 
     public static bool TryGetMatchingEndpoint(string path, HashSet<string> endpoints, out (string Pattern, Dictionary<string, object?> Parameters) matchingEndpoint)

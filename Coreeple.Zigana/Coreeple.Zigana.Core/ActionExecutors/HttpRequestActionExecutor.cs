@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Types.Actions;
+using Coreeple.Zigana.Core.Utils;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -43,8 +44,9 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         var contentType = string.Join(' ', httpResponseMessage.Content.Headers.GetValues("Content-Type"));
-        var responseDefaultHeaders = StringValuesToObject(httpResponseMessage.Headers.ToDictionary());
-        var responseContentHeaders = StringValuesToObject(httpResponseMessage.Content.Headers.ToDictionary());
+
+        var responseDefaultHeaders = HttpUtils.StringValuesToObject(httpResponseMessage.Headers.ToDictionary());
+        var responseContentHeaders = HttpUtils.StringValuesToObject(httpResponseMessage.Content.Headers.ToDictionary());
         var responseHeaders = responseDefaultHeaders.Union(responseContentHeaders).ToDictionary();
 
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
@@ -97,13 +99,5 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
             string c when c.Contains("image") => "image",
             _ => "unknown"
         };
-    }
-
-    private static Dictionary<string, object> StringValuesToObject(Dictionary<string, IEnumerable<string>> values)
-    {
-        return values.Select(m => new KeyValuePair<string, object>(
-                m.Key,
-                m.Value.Count() == 1 ? m.Value.First() : m.Value.ToArray()))
-            .ToDictionary();
     }
 }
