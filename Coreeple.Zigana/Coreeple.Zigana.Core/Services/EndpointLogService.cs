@@ -11,14 +11,14 @@ public class EndpointLogService(IEndpointTransactionRepository endpointRequestRe
         endpointRequestRepository.AddAsync(ScopeId, endpointId, requestId, name, status, DateTime.Now);
     }
 
-    public void AddLog(string log)
+    public void AddLog(string level, string log)
     {
-        endpointTransactionLogRepository.AddAsync(Guid.NewGuid(), ScopeId, log);
+        endpointTransactionLogRepository.AddAsync(Guid.NewGuid(), ScopeId, level, log, DateTime.Now);
     }
 }
 
 public interface IEndpointLogService
 {
     void AddTransaction(Guid endpointId, Guid requestId, string name, string status);
-    void AddLog(string log);
+    void AddLog(string level, string log);
 }

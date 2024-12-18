@@ -71,7 +71,7 @@ public class ActionExecuteManager : IActionExecuteManager
                         var output = await executor(evaluatedAction, cancellationToken);
                         _endpointContext.AddAction(actionKey, output!.AsObject());
 
-                        endpointLogService.AddLog(JsonSerializer.Serialize(evaluatedAction));
+                        endpointLogService.AddLog("Info", JsonSerializer.Serialize(evaluatedAction));
                     }
 
                     endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "SUCCEEDED");
@@ -87,7 +87,7 @@ public class ActionExecuteManager : IActionExecuteManager
                         endpointLogService.AddTransaction(_endpointContext.GetId(), _endpointContext.GetRequestId(), actionKey, "FAILED");
                     }
 
-                    endpointLogService.AddLog(ex.Message);
+                    endpointLogService.AddLog("Error", ex.Message);
 
                     throw;
                 }
