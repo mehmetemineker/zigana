@@ -26,7 +26,7 @@ public class ResponseBuilder(IEndpointContext endpointContext) : IResponseBuilde
 
                 endpointContext.SetResponse(responseJsonObject);
 
-                return;
+                break;
             }
         }
     }
