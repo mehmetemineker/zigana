@@ -1,7 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Abstractions;
 using Coreeple.Zigana.Core.Types.Actions;
 using HtmlAgilityPack;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.Core.ActionExecutors;
@@ -12,13 +11,17 @@ public class HtmlParserActionExecutor : IActionExecutor<HtmlParserAction>
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(action.Source);
 
-        var selectors = action.Selectors.AsObject().ToDictionary();
         var nodes = new JsonArray();
 
-        foreach (var selector in selectors)
+        foreach (var selector in action.Selectors)
         {
-            var selectorValueKind = selector.Value!.GetValueKind();
+            var values = selector.Value.Split(',');
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes(selector.Key);
+
+            if (htmlNodes is null)
+            {
+                continue;
+            }
 
             foreach (var htmlNode in htmlNodes)
             {
@@ -31,27 +34,22 @@ public class HtmlParserActionExecutor : IActionExecutor<HtmlParserAction>
 
                 var node = new JsonObject();
 
-                if (selectorValueKind == JsonValueKind.String)
+                if (values.Contains("*"))
                 {
-                    var values = selector.Value.GetValue<string>().Split(',');
-
-                    if (values.Contains("*"))
+                    foreach (var attribute in attributes)
                     {
-                        foreach (var attribute in attributes)
-                        {
-                            node[attribute.Key] = attribute.Value;
-                        }
+                        node[attribute.Key] = attribute.Value;
                     }
-                    else
+                }
+                else
+                {
+                    foreach (var value in values)
                     {
-                        foreach (var value in values)
-                        {
-                            node[value] = null;
+                        node[value] = null;
 
-                            if (attributes.TryGetValue(value, out string? attrValue))
-                            {
-                                node[value] = attrValue;
-                            }
+                        if (attributes.TryGetValue(value, out string? attrValue))
+                        {
+                            node[value] = attrValue;
                         }
                     }
                 }
@@ -63,11 +61,9 @@ public class HtmlParserActionExecutor : IActionExecutor<HtmlParserAction>
             }
         }
 
-        JsonObject result = new()
+        return await Task.FromResult<JsonNode?>(new JsonObject()
         {
             ["nodes"] = nodes
-        };
-
-        return await Task.FromResult<JsonNode?>(result);
+        });
     }
 }
