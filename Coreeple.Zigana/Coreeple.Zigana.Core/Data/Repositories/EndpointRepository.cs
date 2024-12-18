@@ -5,6 +5,30 @@ namespace Coreeple.Zigana.Core.Data.Repositories;
 
 public class EndpointRepository(IDapperContext context) : IEndpointRepository
 {
+    public async Task<Guid> CreateAsync(Guid apiId, string path, string method, string? actions, string? response, CancellationToken cancellationToken = default)
+    {
+        using var connection = context.CreateConnection();
+
+        var sql = """
+            INSERT INTO "Endpoints" ("Id", "ApiId", "Path", "Method", "Actions", "Response")
+            VALUES(@Id, @ApiId, @Path, @Method, @Actions::json, @Response::json)
+        """;
+
+        Guid id = Guid.NewGuid();
+
+        await connection.ExecuteAsync(new CommandDefinition(sql, new
+        {
+            Id = id,
+            ApiId = apiId,
+            Path = path,
+            Method = method,
+            Actions = actions,
+            Response = response,
+        }, cancellationToken: cancellationToken));
+
+        return id;
+    }
+
     public async Task<IEnumerable<Endpoint>?> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = context.CreateConnection();
@@ -41,6 +65,7 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
 
 public interface IEndpointRepository
 {
+    Task<Guid> CreateAsync(Guid apiId, string path, string method, string? actions, string? response, CancellationToken cancellationToken = default);
     Task<IEnumerable<Endpoint>?> GetAllAsync(CancellationToken cancellationToken = default);
     Task<Endpoint?> GetByIdWithApiAsync(Guid id, CancellationToken cancellationToken = default);
 }

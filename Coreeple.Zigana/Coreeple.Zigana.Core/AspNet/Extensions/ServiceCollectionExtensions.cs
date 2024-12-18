@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEndpointTransactionRepository, EndpointTransactionRepository>();
         services.AddScoped<IEndpointTransactionLogRepository, EndpointTransactionLogRepository>();
 
+        services.AddScoped<IApiService, ApiService>();
         services.AddScoped<IEndpointService, EndpointService>();
         services.AddTransient<IEndpointLogService, EndpointLogService>();
 

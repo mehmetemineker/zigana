@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Data.Repositories;
 using Coreeple.Zigana.Core.Json;
+using Coreeple.Zigana.Core.Services.Dtos;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Core.Utils;
 using System.Text;
@@ -9,6 +10,11 @@ using System.Text.Json.Nodes;
 namespace Coreeple.Zigana.Core.Services;
 public class EndpointService(IApiRepository apiRepository, IEndpointRepository endpointRepository) : IEndpointService
 {
+    public async Task<Guid> CreateAsync(CreateEndpointDto dto, CancellationToken cancellationToken = default)
+    {
+        return await endpointRepository.CreateAsync(dto.ApiId, dto.Path, dto.Method, dto.Actions, dto.Response, cancellationToken);
+    }
+
     public async Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default)
     {
         var endpoints = await GetEndpointsAsync(cancellationToken);
@@ -135,5 +141,6 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 
 public interface IEndpointService
 {
+    Task<Guid> CreateAsync(CreateEndpointDto dto, CancellationToken cancellationToken = default);
     Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default);
 }
