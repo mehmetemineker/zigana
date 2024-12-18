@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Template;
+using Microsoft.Extensions.Primitives;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Xml;
@@ -59,5 +61,27 @@ public class HttpUtils
         }
 
         return content;
+    }
+
+    public static bool TryGetMatchingEndpoint(string path, HashSet<string> endpoints, out (string Pattern, Dictionary<string, object?> Parameters) matchingEndpoint)
+    {
+        var values = new RouteValueDictionary();
+
+        foreach (var endpoint in endpoints)
+        {
+            var template = TemplateParser.Parse(endpoint.Split(':')[0]);
+            var matcher = new TemplateMatcher(template, values);
+
+            if (matcher.TryMatch(path, values))
+            {
+                matchingEndpoint = (endpoint, values.ToDictionary());
+
+                return true;
+            }
+        }
+
+        matchingEndpoint = (string.Empty, new Dictionary<string, object?>());
+
+        return false;
     }
 }

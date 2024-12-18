@@ -2,8 +2,6 @@
 using Coreeple.Zigana.Core.Json;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Core.Utils;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Template;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -17,7 +15,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         var path = context.Request.Path;
         var method = context.Request.Method;
 
-        if (TryGetMatchingEndpoint(path, [.. endpoints.Keys], out var matchingEndpoint))
+        if (HttpUtils.TryGetMatchingEndpoint(path, [.. endpoints.Keys], out var matchingEndpoint))
         {
             var key = $"{matchingEndpoint.Pattern.Split(':')[0]}:{method}";
 
@@ -132,28 +130,6 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
         {
             endpoint.RequestId = requestId;
         }
-    }
-
-    public static bool TryGetMatchingEndpoint(string path, HashSet<string> endpoints, out (string Pattern, Dictionary<string, object?> Parameters) matchingEndpoint)
-    {
-        var values = new RouteValueDictionary();
-
-        foreach (var endpoint in endpoints)
-        {
-            var template = TemplateParser.Parse(endpoint.Split(':')[0]);
-            var matcher = new TemplateMatcher(template, values);
-
-            if (matcher.TryMatch(path, values))
-            {
-                matchingEndpoint = (endpoint, values.ToDictionary());
-
-                return true;
-            }
-        }
-
-        matchingEndpoint = (string.Empty, new Dictionary<string, object?>());
-
-        return false;
     }
 }
 
