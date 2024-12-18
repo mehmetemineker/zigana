@@ -2,10 +2,8 @@
 using Coreeple.Zigana.Core.Types.Actions;
 using Coreeple.Zigana.Core.Utils;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Xml;
 
 namespace Coreeple.Zigana.Core.ActionExecutors;
 public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : IActionExecutor<HttpRequestAction>
@@ -50,7 +48,7 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var responseHeaders = responseDefaultHeaders.Union(responseContentHeaders).ToDictionary();
 
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
-        var content = GetContent(contentAsByteArray, contentType);
+        var content = HttpUtils.GetContent(contentAsByteArray, contentType);
 
         return new JsonObject
         {
@@ -58,46 +56,9 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
             ["headers"] = JsonSerializer.SerializeToNode(responseHeaders),
             ["content"] = new JsonObject
             {
-                ["type"] = GetContentType(contentType),
+                ["type"] = HttpUtils.GetContentType(contentType),
                 ["value"] = content
             }
-        };
-    }
-
-    private static JsonNode? GetContent(byte[] contentAsByteArray, string contentType)
-    {
-        var contentAsString = Encoding.UTF8.GetString(contentAsByteArray);
-        JsonNode? content = Convert.ToBase64String(contentAsByteArray);
-
-        if (contentType.Contains("json"))
-        {
-            content = JsonNode.Parse(contentAsString)!;
-        }
-        else if (contentType.Contains("xml"))
-        {
-            XmlDocument doc = new();
-            doc.LoadXml(contentAsString);
-
-            content = JsonNode.Parse(Newtonsoft.Json.JsonConvert.SerializeXmlNode(doc))!;
-        }
-        else if (contentType.Contains("text"))
-        {
-            content = contentAsString;
-        }
-
-        return content;
-    }
-
-    private static string GetContentType(string contentType)
-    {
-        return contentType switch
-        {
-            string c when c.Contains("json") => "json",
-            string c when c.Contains("xml") => "xml",
-            string c when c.Contains("html") => "html",
-            string c when c.Contains("text") => "text",
-            string c when c.Contains("image") => "image",
-            _ => "unknown"
         };
     }
 }

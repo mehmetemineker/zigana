@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
+using System.Text;
+using System.Text.Json.Nodes;
+using System.Xml;
 
 namespace Coreeple.Zigana.Core.Utils;
 public class HttpUtils
@@ -19,5 +22,42 @@ public class HttpUtils
     public static Dictionary<string, object> StringValuesToObject(Dictionary<string, IEnumerable<string>> values)
     {
         return StringValuesToObject(values);
+    }
+
+    public static string GetContentType(string contentType)
+    {
+        return contentType switch
+        {
+            string c when c.Contains("json") => "json",
+            string c when c.Contains("xml") => "xml",
+            string c when c.Contains("html") => "html",
+            string c when c.Contains("text") => "text",
+            string c when c.Contains("image") => "image",
+            _ => "unknown"
+        };
+    }
+
+    public static JsonNode? GetContent(byte[] contentAsByteArray, string contentType)
+    {
+        var contentAsString = Encoding.UTF8.GetString(contentAsByteArray);
+        JsonNode? content = Convert.ToBase64String(contentAsByteArray);
+
+        if (contentType.Contains("json"))
+        {
+            content = JsonNode.Parse(contentAsString)!;
+        }
+        else if (contentType.Contains("xml"))
+        {
+            XmlDocument doc = new();
+            doc.LoadXml(contentAsString);
+
+            content = JsonNode.Parse(Newtonsoft.Json.JsonConvert.SerializeXmlNode(doc))!;
+        }
+        else if (contentType.Contains("text"))
+        {
+            content = contentAsString;
+        }
+
+        return content;
     }
 }
