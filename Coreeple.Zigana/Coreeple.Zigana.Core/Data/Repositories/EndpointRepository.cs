@@ -5,7 +5,7 @@ namespace Coreeple.Zigana.Core.Data.Repositories;
 
 public class EndpointRepository(IDapperContext context) : IEndpointRepository
 {
-    public async Task<Guid> CreateAsync(Guid apiId, string path, string method, string? actions, string? response, CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateAsync(Endpoint endpoint)
     {
         using var connection = context.CreateConnection();
 
@@ -14,22 +14,12 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
             VALUES(@Id, @ApiId, @Path, @Method, @Actions::json, @Response::json)
         """;
 
-        Guid id = Guid.NewGuid();
+        await connection.ExecuteAsync(sql, endpoint);
 
-        await connection.ExecuteAsync(new CommandDefinition(sql, new
-        {
-            Id = id,
-            ApiId = apiId,
-            Path = path,
-            Method = method,
-            Actions = actions,
-            Response = response,
-        }, cancellationToken: cancellationToken));
-
-        return id;
+        return endpoint.Id;
     }
 
-    public async Task<IEnumerable<Endpoint>?> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Endpoint>?> GetAllPathsAsync(CancellationToken cancellationToken = default)
     {
         using var connection = context.CreateConnection();
 
@@ -49,8 +39,8 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
 
         var sql = """
             SELECT 
-                ep."Id", ep."ApiId", api."Path" || ep."Path" AS "Path", ep."Method",
-                ep."Actions", ep."Response", api."Defs"
+                ep."Id", ep."ApiId", api."Path" || ep."Path" AS "Path", 
+                ep."Method", ep."Actions", ep."Response", api."Defs"
             FROM "Endpoints" ep
             LEFT JOIN public."Apis" api ON api."Id" = ep."ApiId"
             WHERE ep."Id" = @Id
@@ -65,7 +55,7 @@ public class EndpointRepository(IDapperContext context) : IEndpointRepository
 
 public interface IEndpointRepository
 {
-    Task<Guid> CreateAsync(Guid apiId, string path, string method, string? actions, string? response, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Endpoint>?> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<Guid> CreateAsync(Endpoint endpoint);
+    Task<IEnumerable<Endpoint>?> GetAllPathsAsync(CancellationToken cancellationToken = default);
     Task<Endpoint?> GetByIdWithApiAsync(Guid id, CancellationToken cancellationToken = default);
 }
