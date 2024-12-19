@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Data", "Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Data.Postgresql", "Coreeple.Zigana.Data.Postgresql\Coreeple.Zigana.Data.Postgresql.csproj", "{DECA3A8E-8A88-4108-BFC5-A8A397979575}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.AspNet", "Coreeple.Zigana.AspNet\Coreeple.Zigana.AspNet.csproj", "{735E20DC-BFDA-4180-96C4-1F47EF73320A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
