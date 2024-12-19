@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Coreeple.Zigana.Core\Coreeple.Zigana.Core.csproj" />
+	  <ProjectReference Include="..\Coreeple.Zigana.AspNet\Coreeple.Zigana.AspNet.csproj" />
 	</ItemGroup>
 
 </Project>
