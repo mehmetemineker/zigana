@@ -5,7 +5,7 @@ namespace Coreeple.Zigana.Core.Data.Repositories;
 
 public class ApiRepository(IDapperContext context) : IApiRepository
 {
-    public async Task<Guid> CreateAsync(string path, string? name, string? description, string? defs, CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateAsync(Api api)
     {
         using var connection = context.CreateConnection();
 
@@ -14,21 +14,12 @@ public class ApiRepository(IDapperContext context) : IApiRepository
             VALUES(@Id, @Path, @Name, @Description, @Defs::json)
         """;
 
-        Guid id = Guid.NewGuid();
+        await connection.ExecuteAsync(sql, api);
 
-        await connection.ExecuteAsync(new CommandDefinition(sql, new
-        {
-            Id = id,
-            Path = path,
-            Name = name,
-            Description = description,
-            Defs = defs,
-        }, cancellationToken: cancellationToken));
-
-        return id;
+        return api.Id;
     }
 
-    public async Task<IEnumerable<Api>?> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Api>?> GetAllPathsAsync(CancellationToken cancellationToken = default)
     {
         using var connection = context.CreateConnection();
 
@@ -44,6 +35,6 @@ public class ApiRepository(IDapperContext context) : IApiRepository
 
 public interface IApiRepository
 {
-    Task<Guid> CreateAsync(string path, string? name, string? description, string? defs, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Api>?> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<Guid> CreateAsync(Api api);
+    Task<IEnumerable<Api>?> GetAllPathsAsync(CancellationToken cancellationToken = default);
 }

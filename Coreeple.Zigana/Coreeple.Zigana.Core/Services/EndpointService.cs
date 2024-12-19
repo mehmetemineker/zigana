@@ -46,7 +46,7 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
     private async Task<Dictionary<string, Guid>> GetEndpointsAsync(CancellationToken cancellationToken = default)
     {
         var endpointsTask = endpointRepository.GetAllAsync(cancellationToken);
-        var apisTask = apiRepository.GetAllAsync(cancellationToken);
+        var apisTask = apiRepository.GetAllPathsAsync(cancellationToken);
 
         await Task.WhenAll(endpointsTask, apisTask);
 
