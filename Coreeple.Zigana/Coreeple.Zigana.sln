@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Core", "Cor
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Data", "Coreeple.Zigana.Data\Coreeple.Zigana.Data.csproj", "{21D7D5DA-E55A-4DB4-9525-0700EB20D685}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Data.Postgresql", "Coreeple.Zigana.Data.Postgresql\Coreeple.Zigana.Data.Postgresql.csproj", "{DECA3A8E-8A88-4108-BFC5-A8A397979575}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91EDBAA3-BF1A-46B8-8BCC-1994F9924229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21D7D5DA-E55A-4DB4-9525-0700EB20D685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21D7D5DA-E55A-4DB4-9525-0700EB20D685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21D7D5DA-E55A-4DB4-9525-0700EB20D685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21D7D5DA-E55A-4DB4-9525-0700EB20D685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DECA3A8E-8A88-4108-BFC5-A8A397979575}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
