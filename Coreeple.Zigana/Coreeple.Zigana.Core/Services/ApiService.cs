@@ -6,7 +6,13 @@ public class ApiService(IApiRepository apiRepository) : IApiService
 {
     public async Task<Guid> CreateAsync(CreateApiDto dto, CancellationToken cancellationToken = default)
     {
-        return await apiRepository.CreateAsync(dto.Path, dto.Name, dto.Description, dto.Defs, cancellationToken);
+        return await apiRepository.CreateAsync(new Data.Entities.Api
+        {
+            Path = dto.Path,
+            Name = dto.Name,
+            Description = dto.Description,
+            Defs = dto.Defs,
+        });
     }
 }
 

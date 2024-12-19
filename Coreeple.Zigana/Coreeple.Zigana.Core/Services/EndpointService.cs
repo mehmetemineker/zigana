@@ -12,7 +12,14 @@ public class EndpointService(IApiRepository apiRepository, IEndpointRepository e
 {
     public async Task<Guid> CreateAsync(CreateEndpointDto dto, CancellationToken cancellationToken = default)
     {
-        return await endpointRepository.CreateAsync(dto.ApiId, dto.Path, dto.Method, dto.Actions, dto.Response, cancellationToken);
+        return await endpointRepository.CreateAsync(new Data.Entities.Endpoint()
+        {
+            ApiId = dto.ApiId,
+            Path = dto.Path,
+            Method = dto.Method,
+            Actions = dto.Actions,
+            Response = dto.Response
+        });
     }
 
     public async Task<Endpoint> FindEndpointAsync(Microsoft.AspNetCore.Http.HttpContext context, CancellationToken cancellationToken = default)
