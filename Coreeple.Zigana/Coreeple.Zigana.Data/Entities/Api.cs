@@ -8,4 +8,5 @@ public class Api : IEntity
     public string? Name { get; set; }
     public string? Description { get; set; }
     public string? Defs { get; set; }
+    public bool IsActive { get; set; }
 }

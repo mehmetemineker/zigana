@@ -10,8 +10,8 @@ public class ApiRepository(IDbContext dbContext) : IApiRepository
         using var connection = dbContext.CreateConnection();
 
         var sql = """
-            INSERT INTO "Apis" ("Id", "Path", "Name", "Description", "Defs")
-            VALUES(@Id, @Path, @Name, @Description, @Defs::json)
+            INSERT INTO "Apis" ("Id", "Path", "Name", "Description", "Defs", "IsActive")
+            VALUES(@Id, @Path, @Name, @Description, @Defs::json, false)
         """;
 
         await connection.ExecuteAsync(sql, api);
