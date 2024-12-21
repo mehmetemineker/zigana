@@ -21,24 +21,21 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
     {
         SetHeaderDefaultResponseContentType(context);
 
-        string path = context.Request.Path;
-        string method = context.Request.Method;
-
-        var endpoint = await endpointService.FindEndpointAsync(path, method, context.RequestAborted);
-
-        await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-        {
-            EndpointId = endpoint.Id,
-            RequestId = endpoint.RequestId,
-            Name = "RequestStart",
-            Status = "SUCCEEDED",
-        });
-
-        await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
-        FillEndpointContext(endpointContext, endpoint);
+        var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
 
         try
         {
+            await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+            {
+                EndpointId = endpoint.Id,
+                RequestId = endpoint.RequestId,
+                Name = "RequestStart",
+                Status = "SUCCEEDED",
+            });
+
+            await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
+            FillEndpointContext(endpointContext, endpoint);
+
             if (endpoint.Actions != null)
             {
                 await actionExecuteManager.RunAsync(endpoint.Actions, context.RequestAborted);
