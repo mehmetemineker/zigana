@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Data.Entities;
+using Coreeple.Zigana.Data.Exceptions;
 using Dapper;
 
 namespace Coreeple.Zigana.Data.Postgresql.Repositories;
@@ -62,6 +63,6 @@ public class EndpointRepository(IDbContext dbContext) : IEndpointRepository
             Id = id
         }, cancellationToken: cancellationToken));
 
-        return result ?? throw new Exception("Endpoint not found!");
+        return result ?? throw new RecordNotFoundDataException("Endpoint not found!");
     }
 }
