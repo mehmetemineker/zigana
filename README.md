@@ -1,3 +1,5 @@
+[![Dependabot Updates](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates)
+
 # Zigana Gateway
 
 Zigana Gateway makes your 3rd party integrations simple, fast, centralized and standardized.
