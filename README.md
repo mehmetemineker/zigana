@@ -2,9 +2,9 @@
 [![CodeQL](https://github.com/Coreeple/zigana/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/github-code-scanning/codeql)
 [![Dependabot Updates](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates)
 
-# Zigana Gateway
+# Zigana
 
-Zigana Gateway makes your 3rd party integrations simple, fast, centralized and standardized.
+Zigana makes your 3rd party integrations simple, fast, centralized and standardized.
 
 ## Documentations
 
