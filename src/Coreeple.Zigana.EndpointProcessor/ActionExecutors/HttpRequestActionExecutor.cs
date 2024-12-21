@@ -15,10 +15,8 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var httpRequestMessage = new HttpRequestMessage(new HttpMethod(action.Method), action.Url);
         var httpClient = httpClientFactory.CreateClient(HttpClientName);
 
-        var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(action.Headers)!;
-
-        SetRequestContent(action, httpRequestMessage, headers);
-        SetDefaultRequestHeaders(httpClient, headers);
+        SetRequestContent(action, httpRequestMessage);
+        SetDefaultRequestHeaders(action, httpClient);
 
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
@@ -47,9 +45,9 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         return responseHeaders;
     }
 
-    private static void SetRequestContent(HttpRequestAction action, HttpRequestMessage httpRequestMessage, Dictionary<string, string> headers)
+    private static void SetRequestContent(HttpRequestAction action, HttpRequestMessage httpRequestMessage)
     {
-        if (action.Body is not null && headers.TryGetValue("Content-Type", out var requestContentType))
+        if (action.Body is not null && action.Headers.TryGetValue("Content-Type", out var requestContentType))
         {
             httpRequestMessage.Content = requestContentType switch
             {
@@ -60,15 +58,15 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
                 _ => null
             };
 
-            headers.Remove("Content-Type");
+            action.Headers.Remove("Content-Type");
         }
     }
 
-    private static void SetDefaultRequestHeaders(HttpClient httpClient, Dictionary<string, string> headers)
+    private static void SetDefaultRequestHeaders(HttpRequestAction action, HttpClient httpClient)
     {
         httpClient.DefaultRequestHeaders.Clear();
 
-        foreach (var header in headers)
+        foreach (var header in action.Headers)
         {
             httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
         }

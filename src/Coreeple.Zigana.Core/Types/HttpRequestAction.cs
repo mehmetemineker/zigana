@@ -6,6 +6,6 @@ public class HttpRequestAction : Action
     public required string Url { get; set; }
     public required string Method { get; set; }
     public JsonObject? Query { get; set; }
-    public JsonObject? Headers { get; set; }
+    public Dictionary<string, string> Headers { get; set; } = [];
     public JsonNode? Body { get; set; }
 }
