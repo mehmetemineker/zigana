@@ -36,7 +36,7 @@ public class EndpointRepository(IDbContext dbContext) : IEndpointRepository
         return await connection.QueryAsync<Endpoint>(new CommandDefinition(sql, cancellationToken));
     }
 
-    public async Task<Endpoint?> GetByIdWithApiAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Endpoint> GetByIdWithApiAsync(Guid id, CancellationToken cancellationToken = default)
     {
         using var connection = dbContext.CreateConnection();
 
@@ -57,9 +57,11 @@ public class EndpointRepository(IDbContext dbContext) : IEndpointRepository
                 AND ep."IsActive" = true
         """;
 
-        return await connection.QuerySingleOrDefaultAsync<Endpoint>(new CommandDefinition(sql, new
+        var result = await connection.QuerySingleOrDefaultAsync<Endpoint>(new CommandDefinition(sql, new
         {
             Id = id
-        }, cancellationToken: cancellationToken)); ;
+        }, cancellationToken: cancellationToken));
+
+        return result ?? throw new Exception("Endpoint not found!");
     }
 }

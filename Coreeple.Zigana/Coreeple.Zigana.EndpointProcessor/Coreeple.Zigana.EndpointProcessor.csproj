@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Coreeple.Zigana.Core\Coreeple.Zigana.Core.csproj" />
+    <ProjectReference Include="..\Coreeple.Zigana.Services\Coreeple.Zigana.Services.csproj" />
+  </ItemGroup>
+
+</Project>

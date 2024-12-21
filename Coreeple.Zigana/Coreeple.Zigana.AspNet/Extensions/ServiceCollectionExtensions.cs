@@ -1,6 +1,10 @@
 ﻿using Coreeple.Zigana.AspNet;
-using Coreeple.Zigana.Data.Abstractions;
-using Coreeple.Zigana.Data.Postgresql;
+using Coreeple.Zigana.Core.Types;
+using Coreeple.Zigana.EndpointProcessor;
+using Coreeple.Zigana.EndpointProcessor.Abstractions;
+using Coreeple.Zigana.EndpointProcessor.ActionExecutors;
+using Coreeple.Zigana.EndpointProcessor.ResponseBuilders;
+using Coreeple.Zigana.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 
@@ -33,18 +37,19 @@ public static class ServiceCollectionExtensions
             };
         });
 
+        services.AddScoped<IApiService, ApiService>();
+        services.AddScoped<IEndpointService, EndpointService>();
+        services.AddTransient<IEndpointLogService, EndpointLogService>();
+
+        services.AddScoped<IEndpointContext, EndpointContext>();
+
+        services.AddScoped<IActionExecuteManager, ActionExecuteManager>();
+        services.AddScoped<IActionExecutor<HttpRequestAction>, HttpRequestActionExecutor>();
+        services.AddScoped<IActionExecutor<HtmlParserAction>, HtmlParserActionExecutor>();
+        services.AddScoped<IActionExecutor<ParallelAction>, ParallelActionExecutor>();
+
+        services.AddScoped<IResponseBuilder, ResponseBuilder>();
+
         return new ZiganaBuilder(services, configuration);
-    }
-
-    public static ZiganaBuilder UseNpgsql(this ZiganaBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-        builder.Services.AddSingleton<IDbContext>(_ => new PostgresqlDbContext(connectionString));
-
-        return builder;
     }
 }

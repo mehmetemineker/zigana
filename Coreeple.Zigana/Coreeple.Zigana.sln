@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Data.Postgr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.AspNet", "Coreeple.Zigana.AspNet\Coreeple.Zigana.AspNet.csproj", "{735E20DC-BFDA-4180-96C4-1F47EF73320A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.Services", "Coreeple.Zigana.Services\Coreeple.Zigana.Services.csproj", "{AF62AE91-7861-4676-9680-5451BFB5B110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coreeple.Zigana.EndpointProcessor", "Coreeple.Zigana.EndpointProcessor\Coreeple.Zigana.EndpointProcessor.csproj", "{81CEBC00-D06E-4A2F-92EC-1722964D3710}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{735E20DC-BFDA-4180-96C4-1F47EF73320A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF62AE91-7861-4676-9680-5451BFB5B110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF62AE91-7861-4676-9680-5451BFB5B110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF62AE91-7861-4676-9680-5451BFB5B110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF62AE91-7861-4676-9680-5451BFB5B110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81CEBC00-D06E-4A2F-92EC-1722964D3710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81CEBC00-D06E-4A2F-92EC-1722964D3710}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81CEBC00-D06E-4A2F-92EC-1722964D3710}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81CEBC00-D06E-4A2F-92EC-1722964D3710}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Coreeple.Zigana.AspNet\Coreeple.Zigana.AspNet.csproj" />
+	  <ProjectReference Include="..\Coreeple.Zigana.Data.Postgresql\Coreeple.Zigana.Data.Postgresql.csproj" />
 	</ItemGroup>
 
 </Project>

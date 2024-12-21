@@ -16,6 +16,6 @@ app.UseHttpsRedirection();
 
 //app.MapZiganaApi();
 
-//app.UseZigana();
+app.UseZigana();
 
 app.Run();

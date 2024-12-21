@@ -9,6 +9,16 @@ public static class ZiganaApiEndpointRouteBuilderExtensions
 
         var routeGroup = endpoints.MapGroup("");
 
+        //routeGroup.MapPost("/apis", async Task<Guid> ([FromServices] IApiService apiService, [FromBody] CreateApiDto dto) =>
+        //{
+        //    return await apiService.CreateAsync(dto);
+        //}).ShortCircuit();
+
+        //routeGroup.MapPost("/endpoints", async Task<Guid> ([FromServices] IEndpointService endpointService, [FromBody] CreateEndpointDto dto) =>
+        //{
+        //    return await endpointService.CreateAsync(dto);
+        //}).ShortCircuit();
+
         return new IdentityEndpointsConventionBuilder(routeGroup);
     }
 
