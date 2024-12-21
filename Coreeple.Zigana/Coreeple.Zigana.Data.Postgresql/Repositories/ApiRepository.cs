@@ -18,4 +18,16 @@ public class ApiRepository(IDbContext dbContext) : IApiRepository
 
         return api.Id;
     }
+
+    public async Task<IEnumerable<Api>> GetPathsAsync(CancellationToken cancellationToken = default)
+    {
+        using var connection = dbContext.CreateConnection();
+
+        var sql = """
+            SELECT "Id", "Path", "IsActive"
+            FROM "Apis"
+        """;
+
+        return await connection.QueryAsync<Api>(new CommandDefinition(sql, cancellationToken));
+    }
 }
