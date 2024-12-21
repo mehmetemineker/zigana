@@ -1,5 +1,6 @@
 [![Dependabot Updates](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/dependabot/dependabot-updates)
 [![.NET](https://github.com/Coreeple/zigana/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/Coreeple/zigana/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Coreeple/zigana/actions/workflows/github-code-scanning/codeql)
 
 # Zigana Gateway
 
