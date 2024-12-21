@@ -9,6 +9,7 @@ public class Endpoint : IEntity
     public required string Method { get; set; }
     public string? Actions { get; set; }
     public string? Response { get; set; }
+    public bool IsActive { get; set; }
 
     // Api entity reference
     public string? Defs { get; set; }
