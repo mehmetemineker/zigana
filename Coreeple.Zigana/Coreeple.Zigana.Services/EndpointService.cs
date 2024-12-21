@@ -2,6 +2,7 @@
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Data.Entities;
+using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -72,10 +73,4 @@ public class EndpointService(IEndpointRepository endpointRepository) : IEndpoint
 
         throw new Exception("Endpoint not found!");
     }
-}
-
-public interface IEndpointService
-{
-    Task<Guid> CreateAsync(CreateEndpointDto dto);
-    Task<EndpointDto> FindEndpointAsync(string path, string method, CancellationToken cancellationToken = default);
 }

@@ -1,7 +1,7 @@
 ﻿using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
-using Coreeple.Zigana.Services;
+using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;

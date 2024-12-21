@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Data.Entities;
+using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 
 namespace Coreeple.Zigana.Services;
@@ -15,9 +16,4 @@ public class ApiService(IApiRepository apiRepository) : IApiService
             Defs = dto.Defs,
         });
     }
-}
-
-public interface IApiService
-{
-    Task<Guid> InsertAsync(CreateApiDto dto);
 }

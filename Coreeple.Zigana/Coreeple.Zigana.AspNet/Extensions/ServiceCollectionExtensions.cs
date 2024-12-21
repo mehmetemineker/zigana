@@ -5,6 +5,7 @@ using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Coreeple.Zigana.EndpointProcessor.ActionExecutors;
 using Coreeple.Zigana.EndpointProcessor.ResponseBuilders;
 using Coreeple.Zigana.Services;
+using Coreeple.Zigana.Services.Abstractions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 

@@ -1,6 +1,6 @@
 ﻿using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
-using Coreeple.Zigana.Services;
+using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using Microsoft.AspNetCore.Http;
 using System.Net;

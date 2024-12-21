@@ -1,5 +1,6 @@
 ﻿using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Data.Entities;
+using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 
 namespace Coreeple.Zigana.Services;
@@ -33,10 +34,4 @@ public class EndpointLogService(
             Date = DateTime.Now,
         });
     }
-}
-
-public interface IEndpointLogService
-{
-    Task AddTransactionAsync(EndpointTransactionCreateDto dto);
-    Task AddLogAsync(string level, string log);
 }
