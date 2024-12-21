@@ -4,6 +4,7 @@ using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Data.Entities;
 using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
+using Coreeple.Zigana.Services.Exceptions;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Action = Coreeple.Zigana.Core.Types.Action;
@@ -40,7 +41,7 @@ public class EndpointService(IEndpointRepository endpointRepository) : IEndpoint
 
             if (!paths.TryGetValue(key, out Guid endpointId))
             {
-                throw new Exception("Method not allowed!");
+                throw new HttpMethodNotAllowedServiceException();
             }
 
             var endpoint = await endpointRepository.GetByIdWithApiAsync(endpointId, cancellationToken);
@@ -71,6 +72,6 @@ public class EndpointService(IEndpointRepository endpointRepository) : IEndpoint
             return result;
         }
 
-        throw new Exception("Endpoint not found!");
+        throw new EndpointNotFoundServiceException();
     }
 }
