@@ -8,6 +8,7 @@ using Coreeple.Zigana.Services;
 using Coreeple.Zigana.Services.Abstractions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
@@ -50,6 +51,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActionExecutor<ParallelAction>, ParallelActionExecutor>();
 
         services.AddScoped<IResponseBuilder, ResponseBuilder>();
+
+        services.AddSingleton(new DiagnosticListener("Coreeple.Zigana1"));
 
         return new ZiganaBuilder(services, configuration);
     }

@@ -3,6 +3,7 @@ using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -17,11 +18,20 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
           IEndpointLogService endpointLogService,
           IEndpointContext endpointContext,
           IActionExecuteManager actionExecuteManager,
-          IResponseBuilder responseBuilder)
+          IResponseBuilder responseBuilder,
+          DiagnosticSource diagnosticSource)
     {
         SetHeaderDefaultResponseContentType(context);
 
         var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+
+        endpoint.RequestId = Guid.Parse(context.Items["RequestId"]!.ToString()!);
+
+        var activity = new Activity("ZiganaEndpoint");
+        activity.AddTag("EndpointId", endpoint.Id);
+        activity.AddTag("RequestId", endpoint.RequestId);
+
+        diagnosticSource.StartActivity(activity, new { endpoint.RequestId });
 
         try
         {
@@ -88,10 +98,14 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
 
             throw;
         }
-
-        if (context.Response.HasStarted)
+        finally
         {
-            await next(context);
+            diagnosticSource.StopActivity(activity, new { endpoint.RequestId });
+
+            if (context.Response.HasStarted)
+            {
+                await next(context);
+            }
         }
     }
 

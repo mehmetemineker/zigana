@@ -2,17 +2,21 @@
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.EndpointProcessor.ActionExecutors;
-public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : IActionExecutor<HttpRequestAction>
+public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory, DiagnosticSource diagnosticSource) : IActionExecutor<HttpRequestAction>
 {
     private const string HttpClientName = "ZiganaHttpClient";
 
     public async Task<JsonNode?> ExecuteAsync(HttpRequestAction action, CancellationToken cancellationToken)
     {
+        var activity = new Activity("HttpRequestActionExecutor");
+        diagnosticSource.StartActivity(activity, new { });
+
         string url = QueryHelpers.AddQueryString(action.Url, action.Query);
 
         var httpRequestMessage = new HttpRequestMessage(new HttpMethod(action.Method), url);
@@ -27,6 +31,8 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         var contentType = string.Join(' ', httpResponseMessage.Content.Headers.GetValues("Content-Type"));
         var content = HttpHelpers.GetContent(contentAsByteArray, contentType);
+
+        diagnosticSource.StopActivity(activity, new { });
 
         return new JsonObject
         {
