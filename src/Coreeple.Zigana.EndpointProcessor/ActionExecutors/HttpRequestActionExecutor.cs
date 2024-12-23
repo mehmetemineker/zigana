@@ -60,8 +60,6 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
                     JsonContent.Create(action.Body),
                 _ => null
             };
-
-            action.Headers.Remove("Content-Type");
         }
     }
 
@@ -71,7 +69,10 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
 
         foreach (var header in action.Headers)
         {
-            httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            if (!httpClient.DefaultRequestHeaders.Contains(header.Key))
+            {
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
         }
     }
 }
