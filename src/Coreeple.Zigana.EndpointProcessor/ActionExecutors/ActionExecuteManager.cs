@@ -1,9 +1,10 @@
-﻿using Coreeple.Zigana.Core.Helpers;
+﻿using Coreeple.Zigana.Core.Diagnostics;
+using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Coreeple.Zigana.Services.Abstractions;
-using Coreeple.Zigana.Services.Dtos;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Action = Coreeple.Zigana.Core.Types.Action;
@@ -45,32 +46,37 @@ public class ActionExecuteManager : IActionExecuteManager
 
     public async Task RunAsync(Dictionary<string, Action> actions, CancellationToken cancellationToken = default)
     {
+
         var endpointLogService = _serviceProvider.GetRequiredService<IEndpointLogService>();
 
         foreach (var (actionKey, action) in actions)
         {
+            var activity = new Activity("ActionExecuteManager");
+
+            ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
+
             if (_executors.TryGetValue(action.GetType(), out var executor))
             {
                 if (!JsonHelpers.IsTruthy(action.When, _endpointContext.Get()))
                 {
-                    await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                    {
-                        EndpointId = _endpointContext.GetId(),
-                        RequestId = _endpointContext.GetRequestId(),
-                        Name = actionKey,
-                        Status = "PASSED",
-                    });
+                    //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                    //{
+                    //    EndpointId = _endpointContext.GetId(),
+                    //    RequestId = _endpointContext.GetRequestId(),
+                    //    Name = actionKey,
+                    //    Status = "PASSED",
+                    //});
 
                     continue;
                 }
 
-                await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                {
-                    EndpointId = _endpointContext.GetId(),
-                    RequestId = _endpointContext.GetRequestId(),
-                    Name = actionKey,
-                    Status = "PROCESSING",
-                });
+                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                //{
+                //    EndpointId = _endpointContext.GetId(),
+                //    RequestId = _endpointContext.GetRequestId(),
+                //    Name = actionKey,
+                //    Status = "PROCESSING",
+                //});
 
                 try
                 {
@@ -88,35 +94,35 @@ public class ActionExecuteManager : IActionExecuteManager
                         await endpointLogService.AddLogAsync("Info", JsonSerializer.Serialize(evaluatedAction));
                     }
 
-                    await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                    {
-                        EndpointId = _endpointContext.GetId(),
-                        RequestId = _endpointContext.GetRequestId(),
-                        Name = actionKey,
-                        Status = "SUCCEEDED",
-                    });
+                    //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                    //{
+                    //    EndpointId = _endpointContext.GetId(),
+                    //    RequestId = _endpointContext.GetRequestId(),
+                    //    Name = actionKey,
+                    //    Status = "SUCCEEDED",
+                    //});
                 }
                 catch (Exception ex)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                        {
-                            EndpointId = _endpointContext.GetId(),
-                            RequestId = _endpointContext.GetRequestId(),
-                            Name = actionKey,
-                            Status = "ABORTED",
-                        });
+                        //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                        //{
+                        //    EndpointId = _endpointContext.GetId(),
+                        //    RequestId = _endpointContext.GetRequestId(),
+                        //    Name = actionKey,
+                        //    Status = "ABORTED",
+                        //});
                     }
                     else
                     {
-                        await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                        {
-                            EndpointId = _endpointContext.GetId(),
-                            RequestId = _endpointContext.GetRequestId(),
-                            Name = actionKey,
-                            Status = "FAILED",
-                        });
+                        //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                        //{
+                        //    EndpointId = _endpointContext.GetId(),
+                        //    RequestId = _endpointContext.GetRequestId(),
+                        //    Name = actionKey,
+                        //    Status = "FAILED",
+                        //});
                     }
 
                     await endpointLogService.AddLogAsync("Error", ex.Message);
@@ -124,6 +130,9 @@ public class ActionExecuteManager : IActionExecuteManager
                     throw;
                 }
             }
+
+            ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
         }
+
     }
 }

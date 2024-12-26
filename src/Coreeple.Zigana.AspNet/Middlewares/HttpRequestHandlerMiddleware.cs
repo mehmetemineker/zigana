@@ -1,8 +1,10 @@
-﻿using Coreeple.Zigana.Core.Helpers;
+﻿using Coreeple.Zigana.Core.Diagnostics;
+using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -21,17 +23,30 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
     {
         SetHeaderDefaultResponseContentType(context);
 
+        var activity = new Activity("HttpRequestHandler");
+
+
+
+
+        ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
+
+        context.TraceIdentifier = activity.Id!;
+
+        context.Response.Headers["X-Request-Id"] = context.TraceIdentifier;
+
+
         var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+
 
         try
         {
-            await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            {
-                EndpointId = endpoint.Id,
-                RequestId = endpoint.RequestId,
-                Name = "RequestStart",
-                Status = "SUCCEEDED",
-            });
+            //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+            //{
+            //    EndpointId = endpoint.Id,
+            //    RequestId = endpoint.RequestId,
+            //    Name = "RequestStart",
+            //    Status = "SUCCEEDED",
+            //});
 
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
             FillEndpointContext(endpointContext, endpoint);
@@ -55,39 +70,45 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
 
-            await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            {
-                EndpointId = endpoint.Id,
-                RequestId = endpoint.RequestId,
-                Name = "RequestFinish",
-                Status = "SUCCEEDED",
-            });
+            //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+            //{
+            //    EndpointId = endpoint.Id,
+            //    RequestId = endpoint.RequestId,
+            //    Name = "RequestFinish",
+            //    Status = "SUCCEEDED",
+            //});
         }
-        catch
+        catch (Exception ex)
         {
+            activity.AddException(ex);
             if (context.RequestAborted.IsCancellationRequested)
             {
-                await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                {
-                    EndpointId = endpoint.Id,
-                    RequestId = endpoint.RequestId,
-                    Name = "RequestFinish",
-                    Status = "ABORTED",
-                });
+                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                //{
+                //    EndpointId = endpoint.Id,
+                //    RequestId = endpoint.RequestId,
+                //    Name = "RequestFinish",
+                //    Status = "ABORTED",
+                //});
             }
             else
             {
-                await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                {
-                    EndpointId = endpoint.Id,
-                    RequestId = endpoint.RequestId,
-                    Name = "RequestFinish",
-                    Status = "FAILED",
-                });
+                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
+                //{
+                //    EndpointId = endpoint.Id,
+                //    RequestId = endpoint.RequestId,
+                //    Name = "RequestFinish",
+                //    Status = "FAILED",
+                //});
             }
 
             throw;
         }
+        finally
+        {
+            ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
+        }
+
 
         if (context.Response.HasStarted)
         {
@@ -109,10 +130,10 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
             endpoint.Request.Body = JsonNode.Parse(body) ?? JsonNode.Parse("{}")!;
         }
 
-        if (Guid.TryParse(context.TraceIdentifier, out var requestId))
-        {
-            endpoint.RequestId = requestId;
-        }
+        //if (Guid.TryParse(context.TraceIdentifier, out var requestId))
+        //{
+        endpoint.RequestId = context.TraceIdentifier;
+        //}
     }
 
     private static void FillEndpointContext(IEndpointContext endpointContext, EndpointDto endpoint)

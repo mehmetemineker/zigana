@@ -10,7 +10,7 @@ public static class ApplicationBuilderExtensions
         app.UseExceptionHandler();
         app.UseStatusCodePages();
 
-        app.UseMiddleware<CustomTraceIdentifierMiddleware>();
+        //app.UseMiddleware<CustomTraceIdentifierMiddleware>();
         app.UseMiddleware<HttpRequestHandlerMiddleware>();
 
         return app;

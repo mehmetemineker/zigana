@@ -4,7 +4,7 @@ namespace Coreeple.Zigana.EndpointProcessor.Abstractions;
 public interface IEndpointContext
 {
     void SetId(Guid value);
-    void SetRequestId(Guid value);
+    void SetRequestId(string? value);
     void SetDefs(JsonObject value);
     void SetRequestQuery(JsonObject value);
     void SetRequestHeaders(JsonObject value);
@@ -14,6 +14,6 @@ public interface IEndpointContext
     void SetResponse(JsonObject value);
     JsonObject Get();
     Guid GetId();
-    Guid GetRequestId();
+    string? GetRequestId();
     JsonObject GetResponse();
 }

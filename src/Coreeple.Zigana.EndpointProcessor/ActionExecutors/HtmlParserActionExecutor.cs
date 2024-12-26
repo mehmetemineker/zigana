@@ -1,6 +1,8 @@
-﻿using Coreeple.Zigana.Core.Types;
+﻿using Coreeple.Zigana.Core.Diagnostics;
+using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using HtmlAgilityPack;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace Coreeple.Zigana.EndpointProcessor.ActionExecutors;
@@ -8,6 +10,9 @@ public class HtmlParserActionExecutor : IActionExecutor<HtmlParserAction>
 {
     public async Task<JsonNode?> ExecuteAsync(HtmlParserAction action, CancellationToken cancellationToken)
     {
+        var activity = new Activity("HtmlParserActionExecutor");
+        ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
+
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(action.Source);
 
@@ -60,6 +65,8 @@ public class HtmlParserActionExecutor : IActionExecutor<HtmlParserAction>
                 }
             }
         }
+
+        ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
 
         return await Task.FromResult<JsonNode?>(new JsonObject()
         {

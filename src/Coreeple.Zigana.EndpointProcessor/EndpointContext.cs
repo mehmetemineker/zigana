@@ -6,7 +6,7 @@ public class EndpointContext : IEndpointContext
 {
     private readonly JsonObject _context;
     private Guid Id = Guid.NewGuid();
-    private Guid RequestId = Guid.NewGuid();
+    private string? RequestId;
 
     public EndpointContext()
     {
@@ -28,7 +28,7 @@ public class EndpointContext : IEndpointContext
     }
 
     public void SetId(Guid value) => Id = value;
-    public void SetRequestId(Guid value) => RequestId = value;
+    public void SetRequestId(string? value) => RequestId = value;
     public void SetDefs(JsonObject value) => _context["defs"] = value;
     public void SetRequestQuery(JsonObject value) => _context["request"]!["query"] = value;
     public void SetRequestHeaders(JsonObject value) => _context["request"]!["headers"] = value;
@@ -38,6 +38,6 @@ public class EndpointContext : IEndpointContext
     public void SetResponse(JsonObject value) => _context["response"] = value;
     public JsonObject Get() => _context;
     public Guid GetId() => Id;
-    public Guid GetRequestId() => RequestId;
+    public string? GetRequestId() => RequestId;
     public JsonObject GetResponse() => _context["response"]!.AsObject();
 }
