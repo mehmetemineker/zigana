@@ -2,10 +2,8 @@
 using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
-using Coreeple.Zigana.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Action = Coreeple.Zigana.Core.Types.Action;
 
@@ -46,9 +44,6 @@ public class ActionExecuteManager : IActionExecuteManager
 
     public async Task RunAsync(Dictionary<string, Action> actions, CancellationToken cancellationToken = default)
     {
-
-        var endpointLogService = _serviceProvider.GetRequiredService<IEndpointLogService>();
-
         foreach (var (actionKey, action) in actions)
         {
             var activity = new Activity("ActionExecuteManager");
@@ -59,24 +54,11 @@ public class ActionExecuteManager : IActionExecuteManager
             {
                 if (!JsonHelpers.IsTruthy(action.When, _endpointContext.Get()))
                 {
-                    //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                    //{
-                    //    EndpointId = _endpointContext.GetId(),
-                    //    RequestId = _endpointContext.GetRequestId(),
-                    //    Name = actionKey,
-                    //    Status = "PASSED",
-                    //});
-
+                    activity.AddEvent(new ActivityEvent("ActionSkipped"));
                     continue;
                 }
 
-                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                //{
-                //    EndpointId = _endpointContext.GetId(),
-                //    RequestId = _endpointContext.GetRequestId(),
-                //    Name = actionKey,
-                //    Status = "PROCESSING",
-                //});
+                activity.AddEvent(new ActivityEvent("ActionStarted"));
 
                 try
                 {
@@ -90,49 +72,18 @@ public class ActionExecuteManager : IActionExecuteManager
 
                         var output = await executor(evaluatedAction, cancellationToken);
                         _endpointContext.AddAction(actionKey, output!.AsObject());
-
-                        await endpointLogService.AddLogAsync("Info", JsonSerializer.Serialize(evaluatedAction));
                     }
 
-                    //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                    //{
-                    //    EndpointId = _endpointContext.GetId(),
-                    //    RequestId = _endpointContext.GetRequestId(),
-                    //    Name = actionKey,
-                    //    Status = "SUCCEEDED",
-                    //});
+                    activity.AddEvent(new ActivityEvent("ActionCompleted"));
                 }
                 catch (Exception ex)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                        //{
-                        //    EndpointId = _endpointContext.GetId(),
-                        //    RequestId = _endpointContext.GetRequestId(),
-                        //    Name = actionKey,
-                        //    Status = "ABORTED",
-                        //});
-                    }
-                    else
-                    {
-                        //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                        //{
-                        //    EndpointId = _endpointContext.GetId(),
-                        //    RequestId = _endpointContext.GetRequestId(),
-                        //    Name = actionKey,
-                        //    Status = "FAILED",
-                        //});
-                    }
-
-                    await endpointLogService.AddLogAsync("Error", ex.Message);
-
+                    activity.AddException(ex);
                     throw;
                 }
             }
 
             ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
         }
-
     }
 }

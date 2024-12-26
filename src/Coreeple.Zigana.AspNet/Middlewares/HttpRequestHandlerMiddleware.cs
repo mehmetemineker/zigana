@@ -25,29 +25,15 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
 
         var activity = new Activity("HttpRequestHandler");
 
-
-
-
         ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
 
         context.TraceIdentifier = activity.Id!;
-
         context.Response.Headers["X-Request-Id"] = context.TraceIdentifier;
-
 
         var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
 
-
         try
         {
-            //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            //{
-            //    EndpointId = endpoint.Id,
-            //    RequestId = endpoint.RequestId,
-            //    Name = "RequestStart",
-            //    Status = "SUCCEEDED",
-            //});
-
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
             FillEndpointContext(endpointContext, endpoint);
 
@@ -69,39 +55,10 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
-
-            //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            //{
-            //    EndpointId = endpoint.Id,
-            //    RequestId = endpoint.RequestId,
-            //    Name = "RequestFinish",
-            //    Status = "SUCCEEDED",
-            //});
         }
         catch (Exception ex)
         {
             activity.AddException(ex);
-            if (context.RequestAborted.IsCancellationRequested)
-            {
-                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                //{
-                //    EndpointId = endpoint.Id,
-                //    RequestId = endpoint.RequestId,
-                //    Name = "RequestFinish",
-                //    Status = "ABORTED",
-                //});
-            }
-            else
-            {
-                //await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                //{
-                //    EndpointId = endpoint.Id,
-                //    RequestId = endpoint.RequestId,
-                //    Name = "RequestFinish",
-                //    Status = "FAILED",
-                //});
-            }
-
             throw;
         }
         finally
@@ -129,17 +86,11 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
         {
             endpoint.Request.Body = JsonNode.Parse(body) ?? JsonNode.Parse("{}")!;
         }
-
-        //if (Guid.TryParse(context.TraceIdentifier, out var requestId))
-        //{
-        endpoint.RequestId = context.TraceIdentifier;
-        //}
     }
 
     private static void FillEndpointContext(IEndpointContext endpointContext, EndpointDto endpoint)
     {
         endpointContext.SetId(endpoint.Id);
-        endpointContext.SetRequestId(endpoint.RequestId);
         endpointContext.SetDefs(endpoint.Defs);
         endpointContext.SetRequestQuery(endpoint.Request.Query);
         endpointContext.SetRequestHeaders(endpoint.Request.Headers);

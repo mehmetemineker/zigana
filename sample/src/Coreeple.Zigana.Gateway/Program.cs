@@ -39,36 +39,44 @@ class MyLibraryListener : IObserver<KeyValuePair<string, object?>>
         switch (keyValue.Key)
         {
             case "HttpRequestHandler.Start":
-                Console.WriteLine($"HttpRequestHandler.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HttpRequestHandler.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "HttpRequestHandler.Stop":
                 if (Activity.Current?.Events != null)
                 {
                     foreach (var item in Activity.Current.Events)
                     {
-                        Console.WriteLine(item.Tags.FirstOrDefault());
+                        Console.WriteLine($"Name: {item.Name} - Tags: {item.Tags.FirstOrDefault()} - Timestamp: {item.Timestamp}");
                     }
                 }
 
-                Console.WriteLine($"HttpRequestHandler.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HttpRequestHandler.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "HttpRequestActionExecutor.Start":
-                Console.WriteLine($"HttpRequestActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HttpRequestActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "HttpRequestActionExecutor.Stop":
-                Console.WriteLine($"HttpRequestActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HttpRequestActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "ActionExecuteManager.Start":
-                Console.WriteLine($"ActionExecuteManager.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"ActionExecuteManager.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "ActionExecuteManager.Stop":
-                Console.WriteLine($"ActionExecuteManager.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                if (Activity.Current?.Events != null)
+                {
+                    foreach (var item in Activity.Current.Events)
+                    {
+                        Console.WriteLine($"Name: {item.Name} - Tags: {item.Tags.FirstOrDefault()} - Timestamp: {item.Timestamp}");
+                    }
+                }
+
+                Console.WriteLine($"ActionExecuteManager.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "HtmlParserActionExecutor.Start":
-                Console.WriteLine($"HtmlParserActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HtmlParserActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             case "HtmlParserActionExecutor.Stop":
-                Console.WriteLine($"HtmlParserActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId}");
+                Console.WriteLine($"HtmlParserActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
                 break;
             default:
                 break;
