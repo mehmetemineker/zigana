@@ -46,22 +46,26 @@ public class ActionExecuteManager : IActionExecuteManager
     {
         foreach (var (actionKey, action) in actions)
         {
-            var activity = new Activity("ActionExecuteManager");
+            var activity = new Activity("ActionExecuteManager")
+            {
+                DisplayName = actionKey
+            };
 
             ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
 
-            if (_executors.TryGetValue(action.GetType(), out var executor))
+            try
             {
-                if (!JsonHelpers.IsTruthy(action.When, _endpointContext.Get()))
+                if (_executors.TryGetValue(action.GetType(), out var executor))
                 {
-                    activity.AddEvent(new ActivityEvent("ActionSkipped"));
-                    continue;
-                }
+                    if (!JsonHelpers.IsTruthy(action.When, _endpointContext.Get()))
+                    {
+                        activity.AddEvent(new ActivityEvent("Skipped", DateTimeOffset.Now));
+                        continue;
+                    }
 
-                activity.AddEvent(new ActivityEvent("ActionStarted"));
+                    activity.AddEvent(new ActivityEvent("Started", DateTimeOffset.Now));
 
-                try
-                {
+
                     if (action is ParallelAction)
                     {
                         await executor(action, cancellationToken);
@@ -74,16 +78,19 @@ public class ActionExecuteManager : IActionExecuteManager
                         _endpointContext.AddAction(actionKey, output!.AsObject());
                     }
 
-                    activity.AddEvent(new ActivityEvent("ActionCompleted"));
-                }
-                catch (Exception ex)
-                {
-                    activity.AddException(ex);
-                    throw;
+                    activity.AddEvent(new ActivityEvent("Completed", DateTimeOffset.Now));
+
                 }
             }
-
-            ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
+            catch (Exception ex)
+            {
+                activity.AddException(ex, timestamp: DateTimeOffset.Now);
+                throw;
+            }
+            finally
+            {
+                ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
+            }
         }
     }
 }

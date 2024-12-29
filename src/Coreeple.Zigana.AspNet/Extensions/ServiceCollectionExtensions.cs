@@ -6,7 +6,6 @@ using Coreeple.Zigana.EndpointProcessor.ActionExecutors;
 using Coreeple.Zigana.EndpointProcessor.ResponseBuilders;
 using Coreeple.Zigana.Services;
 using Coreeple.Zigana.Services.Abstractions;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -30,11 +29,14 @@ public static class ServiceCollectionExtensions
         {
             options.CustomizeProblemDetails = context =>
             {
-                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                //var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
 
                 context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
-                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
-                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+                context.ProblemDetails.Extensions.Remove("traceId");
+                context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+                context.HttpContext.Response.Headers["X-Trace-Id"] = context.HttpContext.TraceIdentifier;
+
+                //context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
             };
         });
 

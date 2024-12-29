@@ -22,6 +22,10 @@ app.UseZigana();
 
 DiagnosticListener.AllListeners.Subscribe(new Subscriber());
 
+var activityListener = new ActivityListener();
+activityListener.ShouldListenTo = (activitySource) => activitySource.Name == "HttpRequestHandler";
+
+
 app.Run();
 
 
@@ -39,7 +43,7 @@ class MyLibraryListener : IObserver<KeyValuePair<string, object?>>
         switch (keyValue.Key)
         {
             case "HttpRequestHandler.Start":
-                Console.WriteLine($"HttpRequestHandler.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HttpRequestHandler.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "HttpRequestHandler.Stop":
                 if (Activity.Current?.Events != null)
@@ -50,16 +54,16 @@ class MyLibraryListener : IObserver<KeyValuePair<string, object?>>
                     }
                 }
 
-                Console.WriteLine($"HttpRequestHandler.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HttpRequestHandler.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "HttpRequestActionExecutor.Start":
-                Console.WriteLine($"HttpRequestActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HttpRequestActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "HttpRequestActionExecutor.Stop":
-                Console.WriteLine($"HttpRequestActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HttpRequestActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "ActionExecuteManager.Start":
-                Console.WriteLine($"ActionExecuteManager.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"ActionExecuteManager.Start - DisplayName: {Activity.Current?.DisplayName} - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "ActionExecuteManager.Stop":
                 if (Activity.Current?.Events != null)
@@ -70,13 +74,13 @@ class MyLibraryListener : IObserver<KeyValuePair<string, object?>>
                     }
                 }
 
-                Console.WriteLine($"ActionExecuteManager.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"ActionExecuteManager.Stop - DisplayName: {Activity.Current?.DisplayName} - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "HtmlParserActionExecutor.Start":
-                Console.WriteLine($"HtmlParserActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HtmlParserActionExecutor.Start - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             case "HtmlParserActionExecutor.Stop":
-                Console.WriteLine($"HtmlParserActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {Activity.Current?.StartTimeUtc}");
+                Console.WriteLine($"HtmlParserActionExecutor.Stop - ActivityId: {Activity.Current?.Id} - ParentId: {Activity.Current?.ParentId} - StartTimeUtc: {DateTime.Now:MM/dd/yyyy HH:mm:ss.fff}");
                 break;
             default:
                 break;

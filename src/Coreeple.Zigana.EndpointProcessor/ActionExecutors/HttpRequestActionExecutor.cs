@@ -1,9 +1,7 @@
-﻿using Coreeple.Zigana.Core.Diagnostics;
-using Coreeple.Zigana.Core.Helpers;
+﻿using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -15,9 +13,6 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
 
     public async Task<JsonNode?> ExecuteAsync(HttpRequestAction action, CancellationToken cancellationToken)
     {
-        var activity = new Activity("HttpRequestActionExecutor");
-        ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
-
         string url = QueryHelpers.AddQueryString(action.Url, action.Query);
 
         var httpRequestMessage = new HttpRequestMessage(new HttpMethod(action.Method), url);
@@ -32,8 +27,6 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         var contentType = string.Join(' ', httpResponseMessage.Content.Headers.GetValues("Content-Type"));
         var content = HttpHelpers.GetContent(contentAsByteArray, contentType);
-
-        ZiganaDiagnosticSource.Instance.StopActivity(activity, null);
 
         return new JsonObject
         {

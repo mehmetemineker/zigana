@@ -28,12 +28,15 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
         ZiganaDiagnosticSource.Instance.StartActivity(activity, null);
 
         context.TraceIdentifier = activity.Id!;
-        context.Response.Headers["X-Request-Id"] = context.TraceIdentifier;
+        //context.Response.Headers["X-Request-Id"] = context.TraceIdentifier;
+        context.Response.Headers["X-Trace-Id"] = context.TraceIdentifier;
 
-        var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+        activity.AddTag("test", "deneme");
 
         try
         {
+            var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
             FillEndpointContext(endpointContext, endpoint);
 
