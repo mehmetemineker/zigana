@@ -1,8 +1,10 @@
-﻿using Coreeple.Zigana.Core.Helpers;
+﻿using Coreeple.Zigana.Core.Diagnostics;
+using Coreeple.Zigana.Core.Helpers;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
 using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -16,15 +18,23 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
           IEndpointService endpointService,
           IEndpointContext endpointContext,
           IActionExecuteManager actionExecuteManager,
-          IResponseBuilder responseBuilder)
+          IResponseBuilder responseBuilder,
+          ZiganaDiagnosticSource ds)
     {
-        SetHeaderDefaultResponseContentType(context);
-
-        var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+        var activity = new Activity(ZiganaDiagnosticSource.EndpointOperationName);
 
         try
         {
+            SetHeaderDefaultResponseContentType(context);
+
+            var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
+
+            SetEndpointRequestId(context, endpoint);
+
+            StartEndpointActivity(ds, activity, endpoint);
+
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
+
             FillEndpointContext(endpointContext, endpoint);
 
             if (endpoint.Actions != null)
@@ -46,23 +56,28 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            if (context.RequestAborted.IsCancellationRequested)
-            {
-
-            }
-            else
-            {
-
-            }
+            LogExceptionToActivity(activity, ex);
 
             throw;
+        }
+        finally
+        {
+            StopActivity(ds, activity);
         }
 
         if (context.Response.HasStarted)
         {
             await next(context);
+        }
+    }
+
+    private static void SetEndpointRequestId(HttpContext context, EndpointDto endpoint)
+    {
+        if (Guid.TryParse(context.TraceIdentifier, out var requestId))
+        {
+            endpoint.RequestId = requestId;
         }
     }
 
@@ -79,17 +94,10 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
         {
             endpoint.Request.Body = JsonNode.Parse(body) ?? JsonNode.Parse("{}")!;
         }
-
-        if (Guid.TryParse(context.TraceIdentifier, out var requestId))
-        {
-            endpoint.RequestId = requestId;
-        }
     }
 
     private static void FillEndpointContext(IEndpointContext endpointContext, EndpointDto endpoint)
     {
-        endpointContext.SetId(endpoint.Id);
-        endpointContext.SetRequestId(endpoint.RequestId);
         endpointContext.SetDefs(endpoint.Defs);
         endpointContext.SetRequestQuery(endpoint.Request.Query);
         endpointContext.SetRequestHeaders(endpoint.Request.Headers);
@@ -99,4 +107,27 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
 
     private static void SetHeaderDefaultResponseContentType(HttpContext context) =>
         context.Response.ContentType = "application/json";
+
+
+    private static Activity StartEndpointActivity(ZiganaDiagnosticSource ds, Activity activity, EndpointDto endpoint)
+    {
+        activity.SetStartTime(DateTime.Now);
+
+        activity.AddTag("endpoint.id", endpoint.Id);
+        activity.AddTag("request.id", endpoint.RequestId);
+
+        return ds.StartActivity(activity, null);
+    }
+
+    private static void LogExceptionToActivity(Activity activity, Exception ex)
+    {
+        activity.AddException(ex, timestamp: DateTimeOffset.Now);
+    }
+
+    private static void StopActivity(DiagnosticSource diagnosticSource, Activity activity)
+    {
+        activity.SetEndTime(DateTime.Now);
+
+        diagnosticSource.StopActivity(activity, null);
+    }
 }

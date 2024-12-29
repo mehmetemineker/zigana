@@ -66,6 +66,7 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
     private static void SetDefaultRequestHeaders(HttpRequestAction action, HttpClient httpClient)
     {
         httpClient.DefaultRequestHeaders.Clear();
+        action.Headers.Remove("Content-Type");
 
         foreach (var header in action.Headers)
         {

@@ -1,4 +1,5 @@
 ﻿using Coreeple.Zigana.AspNet;
+using Coreeple.Zigana.Core.Diagnostics;
 using Coreeple.Zigana.Core.Types;
 using Coreeple.Zigana.EndpointProcessor;
 using Coreeple.Zigana.EndpointProcessor.Abstractions;
@@ -37,6 +38,8 @@ public static class ServiceCollectionExtensions
                 context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
             };
         });
+
+        services.AddSingleton(new ZiganaDiagnosticSource());
 
         services.AddScoped<IApiService, ApiService>();
         services.AddScoped<IEndpointService, EndpointService>();

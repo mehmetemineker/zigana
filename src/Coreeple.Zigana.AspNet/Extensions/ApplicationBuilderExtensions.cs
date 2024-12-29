@@ -1,4 +1,6 @@
 ﻿using Coreeple.Zigana.AspNet.Middlewares;
+using Coreeple.Zigana.Core.Diagnostics;
+using System.Diagnostics;
 
 namespace Microsoft.AspNetCore.Builder;
 public static class ApplicationBuilderExtensions
@@ -12,6 +14,9 @@ public static class ApplicationBuilderExtensions
 
         app.UseMiddleware<CustomTraceIdentifierMiddleware>();
         app.UseMiddleware<HttpRequestHandlerMiddleware>();
+
+
+        DiagnosticListener.AllListeners.Subscribe(new ZiganaDiagnosticSubscriber());
 
         return app;
     }
