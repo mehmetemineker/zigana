@@ -1,7 +1,7 @@
 ﻿using Coreeple.Zigana.Data.Entities;
 
 namespace Coreeple.Zigana.Data.Abstractions;
-public interface IEndpointTransactionRepository
+public interface IEndpointRequestTransactionRepository
 {
-    Task<Guid> InsertAsync(EndpointTransaction endpointTransaction);
+    Task<Guid> InsertAsync(EndpointRequestTransaction endpointRequestTransaction);
 }

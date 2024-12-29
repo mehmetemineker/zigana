@@ -21,17 +21,20 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
           IResponseBuilder responseBuilder,
           ZiganaDiagnosticSource ds)
     {
-        var activity = new Activity(ZiganaDiagnosticSource.EndpointOperationName);
+        var activity = new Activity(ZiganaDiagnosticSource.EndpointOperationName)
+        {
+            DisplayName = "request"
+        };
+
+        SetHeaderDefaultResponseContentType(context);
+
+        var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
 
         try
         {
-            SetHeaderDefaultResponseContentType(context);
-
-            var endpoint = await endpointService.FindEndpointAsync(context.Request.Path, context.Request.Method, context.RequestAborted);
-
             SetEndpointRequestId(context, endpoint);
 
-            StartEndpointActivity(ds, activity, endpoint);
+            StartActivity(ds, activity, endpoint);
 
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
 
@@ -58,8 +61,7 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
         }
         catch (Exception ex)
         {
-            LogExceptionToActivity(activity, ex);
-
+            AddActivityException(activity, ex);
             throw;
         }
         finally
@@ -109,25 +111,20 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
         context.Response.ContentType = "application/json";
 
 
-    private static Activity StartEndpointActivity(ZiganaDiagnosticSource ds, Activity activity, EndpointDto endpoint)
+    private static Activity StartActivity(DiagnosticSource ds, Activity activity, EndpointDto endpoint)
     {
-        activity.SetStartTime(DateTime.Now);
-
         activity.AddTag("endpoint.id", endpoint.Id);
         activity.AddTag("request.id", endpoint.RequestId);
-
         return ds.StartActivity(activity, null);
     }
 
-    private static void LogExceptionToActivity(Activity activity, Exception ex)
+    private static void AddActivityException(Activity activity, Exception ex)
     {
-        activity.AddException(ex, timestamp: DateTimeOffset.Now);
+        activity.AddException(ex);
     }
 
-    private static void StopActivity(DiagnosticSource diagnosticSource, Activity activity)
+    private static void StopActivity(DiagnosticSource ds, Activity activity)
     {
-        activity.SetEndTime(DateTime.Now);
-
-        diagnosticSource.StopActivity(activity, null);
+        ds.StopActivity(activity, null);
     }
 }

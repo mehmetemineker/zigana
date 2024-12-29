@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
 
         builder.Services.AddScoped<IApiRepository, ApiRepository>();
         builder.Services.AddScoped<IEndpointRepository, EndpointRepository>();
-        builder.Services.AddScoped<IEndpointTransactionRepository, EndpointTransactionRepository>();
+        builder.Services.AddScoped<IEndpointRequestTransactionRepository, EndpointTransactionRepository>();
         builder.Services.AddScoped<IEndpointTransactionLogRepository, EndpointTransactionLogRepository>();
 
         return builder;

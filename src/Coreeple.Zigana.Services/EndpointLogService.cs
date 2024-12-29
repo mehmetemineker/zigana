@@ -4,34 +4,19 @@ using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Dtos;
 
 namespace Coreeple.Zigana.Services;
-public class EndpointLogService(
-    IEndpointTransactionRepository endpointRequestRepository,
-    IEndpointTransactionLogRepository endpointTransactionLogRepository) : IEndpointLogService
+public class EndpointLogService(IEndpointRequestTransactionRepository endpointRequestTransactionRepository)
+    : IEndpointLogService
 {
-    public Guid ScopeId { get; } = Guid.NewGuid();
-
-    public async Task AddTransactionAsync(EndpointTransactionCreateDto dto)
+    public async Task AddTransactionAsync(EndpointRequestTransactionCreateDto dto)
     {
-        await endpointRequestRepository.InsertAsync(new EndpointTransaction()
+        await endpointRequestTransactionRepository.InsertAsync(new EndpointRequestTransaction()
         {
-            Id = ScopeId,
+            Id = dto.Id,
             EndpointId = dto.EndpointId,
-            RequestId = dto.RequestId,
             Name = dto.Name,
             Status = dto.Status,
-            Date = DateTime.Now,
-        });
-    }
-
-    public async Task AddLogAsync(string level, string log)
-    {
-        await endpointTransactionLogRepository.InsertAsync(new EndpointTransactionLog()
-        {
-            Id = Guid.NewGuid(),
-            TransactionId = ScopeId,
-            Level = level,
-            Log = log,
-            Date = DateTime.Now,
+            Message = dto.Message,
+            Date = dto.Date,
         });
     }
 }

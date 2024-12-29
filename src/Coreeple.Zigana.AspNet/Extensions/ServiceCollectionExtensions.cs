@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IApiService, ApiService>();
         services.AddScoped<IEndpointService, EndpointService>();
-        services.AddTransient<IEndpointLogService, EndpointLogService>();
+        services.AddScoped<IEndpointLogService, EndpointLogService>();
 
         services.AddScoped<IEndpointContext, EndpointContext>();
 
