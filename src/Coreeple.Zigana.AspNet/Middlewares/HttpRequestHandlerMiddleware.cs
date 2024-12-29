@@ -14,7 +14,6 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
     public async Task InvokeAsync(
           HttpContext context,
           IEndpointService endpointService,
-          IEndpointLogService endpointLogService,
           IEndpointContext endpointContext,
           IActionExecuteManager actionExecuteManager,
           IResponseBuilder responseBuilder)
@@ -25,14 +24,6 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
 
         try
         {
-            await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            {
-                EndpointId = endpoint.Id,
-                RequestId = endpoint.RequestId,
-                Name = "RequestStart",
-                Status = "SUCCEEDED",
-            });
-
             await SetEndpointRequestFromHttpContext(context, endpoint, context.RequestAborted);
             FillEndpointContext(endpointContext, endpoint);
 
@@ -54,36 +45,16 @@ public class HttpRequestHandlerMiddleware(RequestDelegate next)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
             }
-
-            await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-            {
-                EndpointId = endpoint.Id,
-                RequestId = endpoint.RequestId,
-                Name = "RequestFinish",
-                Status = "SUCCEEDED",
-            });
         }
         catch
         {
             if (context.RequestAborted.IsCancellationRequested)
             {
-                await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                {
-                    EndpointId = endpoint.Id,
-                    RequestId = endpoint.RequestId,
-                    Name = "RequestFinish",
-                    Status = "ABORTED",
-                });
+
             }
             else
             {
-                await endpointLogService.AddTransactionAsync(new EndpointTransactionCreateDto()
-                {
-                    EndpointId = endpoint.Id,
-                    RequestId = endpoint.RequestId,
-                    Name = "RequestFinish",
-                    Status = "FAILED",
-                });
+
             }
 
             throw;
