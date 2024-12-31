@@ -23,6 +23,8 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
 
         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
+        httpResponseMessage.EnsureSuccessStatusCode();
+
         var responseHeaders = GetResponseHeaders(httpResponseMessage);
         var contentAsByteArray = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         var contentType = string.Join(' ', httpResponseMessage.Content.Headers.GetValues("Content-Type"));
