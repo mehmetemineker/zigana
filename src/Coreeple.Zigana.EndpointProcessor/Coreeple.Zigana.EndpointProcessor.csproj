@@ -1,18 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.0.0-alpha</Version>
+		<RepositoryUrl>https://github.com/Coreeple/zigana</RepositoryUrl>
+		<Authors>Coreeple</Authors>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Coreeple.Zigana.Core\Coreeple.Zigana.Core.csproj" />
+		<ProjectReference Include="..\Coreeple.Zigana.Services\Coreeple.Zigana.Services.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Coreeple.Zigana.Core\Coreeple.Zigana.Core.csproj" />
-    <ProjectReference Include="..\Coreeple.Zigana.Services\Coreeple.Zigana.Services.csproj" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>
