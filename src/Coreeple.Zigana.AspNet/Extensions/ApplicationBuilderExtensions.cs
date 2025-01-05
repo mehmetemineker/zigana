@@ -1,4 +1,5 @@
 ﻿using Coreeple.Zigana.AspNet.Middlewares;
+using Coreeple.Zigana.Data.Abstractions;
 using Coreeple.Zigana.Services.Abstractions;
 using Coreeple.Zigana.Services.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ public static class ApplicationBuilderExtensions
 
         using var scope = app.ApplicationServices.CreateScope();
         var endpointLogService = scope.ServiceProvider.GetRequiredService<IEndpointLogService>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
 
         DiagnosticListener.AllListeners.Subscribe(new ZiganaDiagnosticSubscriber(endpointLogService));
 

@@ -7,14 +7,17 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
-    public static ZiganaBuilder UseNpgsql(this ZiganaBuilder builder)
+    public static ZiganaBuilder UseNpgsql(this ZiganaBuilder builder, string schema = "public")
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        builder.Services.AddSingleton<IDbContext>(_ => new PostgresqlDbContext(connectionString));
+        var dbContext = new PostgresqlDbContext(connectionString, schema);
+        dbContext.Migration();
+
+        builder.Services.AddSingleton<IDbContext>(_ => dbContext);
 
         builder.Services.AddScoped<IApiRepository, ApiRepository>();
         builder.Services.AddScoped<IEndpointRepository, EndpointRepository>();
