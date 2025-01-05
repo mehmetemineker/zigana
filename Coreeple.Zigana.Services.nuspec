@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Coreeple.Zigana.Services</id>
+	<title>Coreeple.Zigana.Services</title>
+    <version>1.0.0-alpha.1.2501.1</version>
+    <authors>Coreeple</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <!-- <icon>icon.png</icon> -->
+    <projectUrl>https://github.com/Coreeple/zigana</projectUrl>
+    <description>Coreeple.Zigana.Services</description>
+    <releaseNotes></releaseNotes>
+    <tags>Coreeple Zigana</tags>
+	<readme>README.md</readme>
+	<language>en-US</language>
+	<files>
+		<file src="LICENSE" />
+		<file src="README.md" />
+	</files>
+  </metadata>
+</package>
