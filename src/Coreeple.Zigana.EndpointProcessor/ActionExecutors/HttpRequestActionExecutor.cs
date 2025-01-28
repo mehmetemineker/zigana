@@ -60,6 +60,8 @@ public class HttpRequestActionExecutor(IHttpClientFactory httpClientFactory) : I
                     new FormUrlEncodedContent(JsonSerializer.Deserialize<Dictionary<string, string>>(action.Body)!),
                 "application/json" =>
                     JsonContent.Create(action.Body),
+                "application/xml" =>
+                    new StringContent(action.Body.ToString()),
                 _ => null
             };
         }
