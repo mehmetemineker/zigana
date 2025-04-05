@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "coreeple.zigana.gateway": "StartDebugging"
+        "zigana.gateway": "StartDebugging"
       }
     }
   }

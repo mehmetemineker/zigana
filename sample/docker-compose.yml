@@ -1,12 +1,12 @@
 services:
-  coreeple.zigana.gateway:
-    image: ${DOCKER_REGISTRY-}coreepleziganagateway
+  zigana.gateway:
+    image: ${DOCKER_REGISTRY-}ziganagateway
     depends_on:
       db:
        condition: service_healthy
     build:
       context: .
-      dockerfile: src/Coreeple.Zigana.Gateway/Dockerfile
+      dockerfile: src/Zigana.Gateway/Dockerfile
 
   db:
     image: postgres
